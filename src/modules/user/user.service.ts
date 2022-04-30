@@ -1,18 +1,21 @@
 import { inject, injectable } from 'inversify';
 
-import { IUserRepository, IUserService } from './user.interface';
-import { UserEntity } from './user.entity';
+import { IUserRepository, IUserService, UserCreate } from './user.interface';
+
 import { TYPES } from '@shared/ioc/types.ioc';
+import { UserEntity } from './user.entity';
 
 @injectable()
 export class UserService<T extends UserEntity> implements IUserService<T> {
-  constructor(@inject(TYPES.IUserRepository) private readonly _repository: IUserRepository<T>) {}
+  constructor(@inject(TYPES.IUserRepository) private readonly _repository: IUserRepository<UserEntity>) {}
+ 
+  async createOne(item: UserCreate): Promise<T> {
+    const userEntity = UserEntity.create(item);
 
-  async createOne(item: T): Promise<T> {
-    return this._repository.create(item);
-  }
+    const createdUser = await this._repository.create(userEntity);
 
-  async getById(_id: string): Promise<T> {
-    throw new Error('Method not implemented.');
+    console.log(createdUser);
+
+    return createdUser as T;
   }
 }

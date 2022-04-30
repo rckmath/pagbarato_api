@@ -1,19 +1,15 @@
 import * as express from 'express';
 import { inject } from 'inversify';
-import {
-  controller,
-  httpPost,
-  request,
-  response,
-  BaseHttpController,
-  IHttpActionResult,
-  Controller,
-} from 'inversify-express-utils';
+import { controller, httpPost, request, response, BaseHttpController, Controller } from 'inversify-express-utils';
 
 import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IUserService } from './user.interface';
 import { UserEntity } from './user.entity';
+import { CreateUserDto } from './dtos';
+
+import { BaseHttpResponse } from '@http/api';
+import { ValidateRequestMiddleware } from '@http/api';
 
 @controller('/user')
 export class UserController extends BaseHttpController implements Controller {
@@ -21,17 +17,12 @@ export class UserController extends BaseHttpController implements Controller {
     super();
   }
 
-  @httpPost('/')
-  public async create(@request() req: express.Request, @response() _res: express.Response): Promise<IHttpActionResult> {
-    try {
-      let response = {};
+  @httpPost('/', ValidateRequestMiddleware.with(CreateUserDto))
+  public async create(@request() req: express.Request, @response() res: express.Response) {
+    const createdUser = await this._userService.createOne(req.body);
 
-      response = await this._userService.createOne(req.body);
+    const response = BaseHttpResponse.success(createdUser);
 
-      return this.json(response, 201);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      return this.json({ error: err.message }, 400);
-    }
+    return res.json(response);
   }
 }

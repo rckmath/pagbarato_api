@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "UserRoleType" AS ENUM ('USER', 'ADMIN');
+CREATE TYPE "UserRoleType" AS ENUM ('CONSUMER', 'ADMIN');
 
 -- CreateEnum
 CREATE TYPE "PriceType" AS ENUM ('COMMON', 'DEAL');
@@ -7,10 +7,11 @@ CREATE TYPE "PriceType" AS ENUM ('COMMON', 'DEAL');
 -- CreateTable
 CREATE TABLE "User" (
     "id" CHAR(36) NOT NULL,
+    "firebaseId" TEXT NOT NULL,
     "email" VARCHAR(320) NOT NULL,
-    "role" "UserRoleType" NOT NULL DEFAULT E'USER',
-    "password" TEXT,
-    "name" VARCHAR(100),
+    "role" "UserRoleType" NOT NULL DEFAULT E'CONSUMER',
+    "password" TEXT NOT NULL,
+    "name" VARCHAR(100) NOT NULL,
     "birthDate" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

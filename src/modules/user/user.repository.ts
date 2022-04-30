@@ -2,15 +2,27 @@ import { injectable } from 'inversify';
 
 import { PrismaService } from '@database/prisma';
 
-import { UserEntity } from './user.entity';
 import { IUserRepository } from './user.interface';
+import { UserEntity } from './user.entity';
+
+import { UserRoleType as PrismaUserRoleType } from '@prisma/client';
 
 @injectable()
 export class UserRepository<T extends UserEntity> implements IUserRepository<T> {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async create(_item: T): Promise<T> {
-    throw new Error('Method not implemented.');
+  async create(item: T): Promise<T> {
+      const userCreated = await this._prisma.user.create({
+        data: {
+          name: item.name,
+          email: item.email,
+          birthDate: item.birthDate,
+          password: item.password,
+          role: item.role as PrismaUserRoleType,
+        },
+      });
+      
+      return userCreated as T;
   }
 
   async update(_id: string, _item: T): Promise<boolean> {

@@ -1,12 +1,25 @@
-import { IRead } from "@database/interfaces/read.interface";
-import { IWrite } from "@database/interfaces/write.interface";
-import { UserEntity } from "./user.entity";
+import { IRead, IWrite } from '@database/interfaces';
+import { BaseAttributes } from '@database/base.type';
+import { UserEntity } from './user.entity';
+import { UserRoleType } from './user.enum';
 
-export interface IUserDto {}
+export type UserCreate = {
+  email: string;
+  name: string;
+  password: string;
+  role: UserRoleType | null;
+  birthDate: Date | null;
+};
+
+export type User = BaseAttributes & {
+  email: string;
+  name: string;
+  role: UserRoleType;
+  birthDate: Date | null;
+};
 
 export interface IUserService<T extends UserEntity> {
-  createOne(item: T): Promise<T>;
-  getById(id: string): Promise<T>;
+  createOne(item: UserCreate): Promise<T>;
 }
 
 export interface IUserRepository<T extends UserEntity> extends IWrite<T>, IRead<T> {}

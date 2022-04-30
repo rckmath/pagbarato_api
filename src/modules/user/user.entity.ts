@@ -1,5 +1,5 @@
 import { BaseEntity } from '@infra/database/base.entity';
-import { InvalidFieldError } from '@shared/errors';
+import { InvalidFieldException } from '@shared/errors';
 
 import { UserRoleType } from './user.enum';
 import { UserCreate } from './user.interface';
@@ -10,6 +10,7 @@ export class UserEntity extends BaseEntity {
   public readonly email: string;
   public readonly name: string;
   public readonly password: string;
+  public readonly firebaseId: string;
   public readonly role: string;
   public readonly birthDate: Date | null;
 
@@ -17,6 +18,7 @@ export class UserEntity extends BaseEntity {
     super();
     this.email = user.email;
     this.name = user.name;
+    this.firebaseId = user.firebaseId;
     this.password = user.password;
     this.birthDate = user.birthDate;
     this.role = user.role as string;
@@ -25,10 +27,10 @@ export class UserEntity extends BaseEntity {
 
   public static create(user: UserCreate): UserEntity {
     const validatedEmail = emailValidation(user.email);
-    if (!validatedEmail) { throw new InvalidFieldError('email', user.email); }
+    if (!validatedEmail) { throw new InvalidFieldException('email', user.email); }
     
     const validatedPassword = passwordValidation(user.password);
-    if (!validatedPassword) { throw new InvalidFieldError('password'); }
+    if (!validatedPassword) { throw new InvalidFieldException('password'); }
     
     return new UserEntity({
       email: validatedEmail,

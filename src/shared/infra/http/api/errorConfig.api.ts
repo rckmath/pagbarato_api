@@ -1,4 +1,4 @@
-import { InvalidFieldError, MissingFieldError } from '@shared/errors';
+import { InvalidFieldException, MissingFieldException } from '@shared/errors';
 import * as express from 'express';
 import BaseHttpResponse from './baseResponse.api';
 
@@ -14,12 +14,12 @@ export default function errorHandlerMiddleware(err: any, _req: express.Request, 
     message: err?.message,
   };
 
-  if (err instanceof InvalidFieldError || err?.name === 'InvalidFieldError') {
+  if (err instanceof InvalidFieldException || err?.name === 'InvalidFieldException') {
     const response = BaseHttpResponse.failed(errorObject, 400)
     return res.status(response.statusCode).json(response)
   }
 
-  if (err instanceof MissingFieldError || err?.name === 'MissingFieldError') {
+  if (err instanceof MissingFieldException || err?.name === 'MissingFieldError') {
     const response = BaseHttpResponse.failed(errorObject, 422)
     return res.status(response.statusCode).json(response)
   }

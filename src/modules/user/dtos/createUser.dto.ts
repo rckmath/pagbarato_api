@@ -1,4 +1,4 @@
-import { MissingFieldError } from '@shared/errors';
+import { MissingFieldException } from '@shared/errors';
 
 export default class CreateUserDto {
   constructor(
@@ -10,15 +10,15 @@ export default class CreateUserDto {
 
   static from(body: Partial<CreateUserDto>) {
     if (!body.email) {
-      throw new MissingFieldError('name');
+      throw new MissingFieldException('name');
     }
 
     if (!body.name) {
-      throw new MissingFieldError('email');
+      throw new MissingFieldException('email');
     }
 
     if (!body.password) {
-      throw new MissingFieldError('password');
+      throw new MissingFieldException('password');
     }
 
     return new CreateUserDto(body.name, body.email, body.password, body.birthDate || null);

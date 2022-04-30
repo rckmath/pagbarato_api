@@ -1,4 +1,4 @@
-export class MissingFieldError extends Error {
+export class MissingFieldException extends Error {
   public readonly name = 'MissingFieldError';
 
   constructor(fieldName: string) {

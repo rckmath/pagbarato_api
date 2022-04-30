@@ -1,5 +1,5 @@
-export class NotFoundError extends Error {
-  public readonly name = 'NotFoundError';
+export class NotFoundException extends Error {
+  public readonly name = 'NotFoundException';
 
   constructor(message: string) {
     super(message);

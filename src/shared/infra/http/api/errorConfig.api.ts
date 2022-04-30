@@ -15,7 +15,7 @@ export default function errorHandlerMiddleware(err: any, _req: express.Request, 
   };
 
   if (err instanceof InvalidFieldError || err?.name === 'InvalidFieldError') {
-    const response = BaseHttpResponse.failed(errorObject, 422)
+    const response = BaseHttpResponse.failed(errorObject, 400)
     return res.status(response.statusCode).json(response)
   }
 

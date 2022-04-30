@@ -4,4 +4,10 @@ export default class Constants {
   public static port = process.env.PORT;
 
   public static db = { url: process.env.DATABASE_URL };
+
+  public static firebaseCredentials = {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  };
 }

@@ -25,11 +25,8 @@ model User {
   id         String @id @default(uuid()) @db.Char(36)
   firebaseId String
 
-  email String       @unique @db.VarChar(320)
-  role  UserRoleType @default(CONSUMER)
-
-  password String
-  name     String @db.VarChar(100)
+  name String       @db.VarChar(100)
+  role UserRoleType @default(CONSUMER)
 
   birthDate DateTime?
 

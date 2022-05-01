@@ -1,43 +1,30 @@
-import { BaseEntity } from '@infra/database/base.entity';
-import { InvalidFieldException } from '@shared/errors';
+import { MissingFieldException } from '@shared/errors';
 
+import { UserCreateDto } from './dtos';
 import { UserRoleType } from './user.enum';
-import { UserCreate } from './user.interface';
 
-import { emailValidation, passwordValidation } from './validators';
-
-export class UserEntity extends BaseEntity {
-  public readonly email: string;
+export class UserEntity {
   public readonly name: string;
-  public readonly password: string;
   public readonly firebaseId: string;
   public readonly role: string;
   public readonly birthDate: Date | null;
 
-  private constructor(user: UserCreate) {
-    super();
-    this.email = user.email;
+  private constructor(user: UserEntity) {
     this.name = user.name;
     this.firebaseId = user.firebaseId;
-    this.password = user.password;
     this.birthDate = user.birthDate;
-    this.role = user.role as string;
+    this.role = user.role;
     Object.freeze(this);
   }
 
-  public static create(user: UserCreate): UserEntity {
-    const validatedEmail = emailValidation(user.email);
-    if (!validatedEmail) { throw new InvalidFieldException('email', user.email); }
-    
-    const validatedPassword = passwordValidation(user.password);
-    if (!validatedPassword) { throw new InvalidFieldException('password'); }
-    
+  public static create(user: UserCreateDto): UserEntity {
+    if (!user.firebaseId) throw new MissingFieldException('firebaseId');
+
     return new UserEntity({
-      email: validatedEmail,
-      password: validatedPassword,
       name: user.name,
       birthDate: user.birthDate,
       role: user.role || UserRoleType.CONSUMER,
+      firebaseId: user.firebaseId,
     });
   }
 }

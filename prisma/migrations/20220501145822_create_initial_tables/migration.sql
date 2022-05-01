@@ -8,10 +8,8 @@ CREATE TYPE "PriceType" AS ENUM ('COMMON', 'DEAL');
 CREATE TABLE "User" (
     "id" CHAR(36) NOT NULL,
     "firebaseId" TEXT NOT NULL,
-    "email" VARCHAR(320) NOT NULL,
-    "role" "UserRoleType" NOT NULL DEFAULT E'CONSUMER',
-    "password" TEXT NOT NULL,
     "name" VARCHAR(100) NOT NULL,
+    "role" "UserRoleType" NOT NULL DEFAULT E'CONSUMER',
     "birthDate" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -60,9 +58,6 @@ CREATE TABLE "Price" (
 
     CONSTRAINT "Price_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "Price" ADD CONSTRAINT "Price_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

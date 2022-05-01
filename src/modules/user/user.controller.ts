@@ -5,19 +5,18 @@ import { controller, httpPost, request, response, BaseHttpController, Controller
 import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IUserService } from './user.interface';
-import { UserEntity } from './user.entity';
-import { CreateUserDto } from './dtos';
+import { UserCreateDto, UserDto } from './dtos';
 
 import { BaseHttpResponse } from '@http/api';
 import { ValidateRequestMiddleware } from '@http/api';
 
 @controller('/user')
 export class UserController extends BaseHttpController implements Controller {
-  constructor(@inject(TYPES.IUserService) private readonly _userService: IUserService<UserEntity>) {
+  constructor(@inject(TYPES.IUserService) private readonly _userService: IUserService<UserDto>) {
     super();
   }
 
-  @httpPost('/', ValidateRequestMiddleware.with(CreateUserDto))
+  @httpPost('/', ValidateRequestMiddleware.with(UserCreateDto))
   public async create(@request() req: express.Request, @response() res: express.Response) {
     const createdUser = await this._userService.createOne(req.body);
 

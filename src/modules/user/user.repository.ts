@@ -3,15 +3,15 @@ import { injectable } from 'inversify';
 import { PrismaService } from '@database/prisma';
 
 import { UserEntity } from './user.entity';
-import { IUser, IUserRepository } from './user.interface';
+import { IUserRepository, User, UserComplete } from './user.interface';
 import { UserRoleType as PrismaUserRoleType } from '@prisma/client';
-import FirebaseClient from '@root/src/shared/infra/firebase';
+import FirebaseClient from '@infra/firebase';
 
 @injectable()
 export class UserRepository<T> implements IUserRepository<UserEntity> {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async create(item: UserEntity): Promise<IUser> {
+  async create(item: UserEntity): Promise<User> {
     const userCreated = await this._prisma.user.create({
       data: {
         name: item.name,
@@ -21,16 +21,10 @@ export class UserRepository<T> implements IUserRepository<UserEntity> {
       },
     });
 
-    const userFirebase = await FirebaseClient.auth().getUser(userCreated.firebaseId);
-
     return {
       id: userCreated.id,
       name: userCreated.name,
-      role: userCreated.role,
-      email: userFirebase.email ?? '',
       createdAt: userCreated.createdAt,
-      updatedAt: userCreated.updatedAt,
-      birthDate: userCreated.birthDate,
     };
   }
 
@@ -42,11 +36,25 @@ export class UserRepository<T> implements IUserRepository<UserEntity> {
     throw new Error('Method not implemented.');
   }
 
-  async find(_item: Partial<T>): Promise<IUser[]> {
+  async find(_item: Partial<T>): Promise<User[]> {
     throw new Error('Method not implemented.');
   }
 
-  async findOne(_id: string): Promise<IUser> {
-    throw new Error('Method not implemented.');
+  async findOne(id: string): Promise<UserComplete | null> {
+    const foundUser = await this._prisma.user.findUnique({ where: { id } });
+
+    if (!foundUser) return foundUser;
+
+    const userFirebase = await FirebaseClient.auth().getUser(foundUser.firebaseId);
+
+    return {
+      id: foundUser.id,
+      role: foundUser.role,
+      name: foundUser.name,
+      email: userFirebase.email || '',
+      createdAt: foundUser.createdAt,
+      birthDate: foundUser.birthDate,
+      updatedAt: foundUser.updatedAt,
+    };
   }
 }

@@ -1,4 +1,5 @@
 import UserCreateDto from './createUser.dto';
+import UserFindOneDto from './findOne.dto';
 import UserDto from './user.dto';
 
-export { UserCreateDto, UserDto };
+export { UserCreateDto, UserFindOneDto, UserDto };

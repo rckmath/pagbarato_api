@@ -1,25 +1,30 @@
-import { IUser } from '../user.interface';
+import { MissingFieldException } from '@root/src/shared/errors';
+import { UserComplete } from '../user.interface';
 
 export default class UserDto {
   constructor(
     public readonly id: string,
     public readonly name: string,
-    public readonly email: string,
     public readonly createdAt: Date,
-    public readonly birthDate: Date | null,
+    public readonly email?: string,
+    public readonly birthDate?: Date | null,
     public readonly role?: string,
     public readonly updatedAt?: Date
   ) {}
 
-  static from(entity: IUser) {
-    return new UserDto(entity.id, entity.name, entity.email, entity.createdAt, entity.birthDate);
+  static from(user: Partial<UserComplete>) {
+    if (!user.id) throw new MissingFieldException('id');
+    if (!user.name) throw new MissingFieldException('name');
+    if (!user.createdAt) throw new MissingFieldException('createdAt');
+
+    return new UserDto(user.id, user.name, user.createdAt, user.email, user.birthDate);
   }
 
-  static fromAdmin(entity: IUser) {
-    return new UserDto(entity.id, entity.name, entity.email, entity.createdAt, entity.birthDate, entity.role, entity.updatedAt);
+  static fromAdmin(user: UserComplete) {
+    return new UserDto(user.id, user.name, user.createdAt, user.email, user.birthDate, user.role, user.updatedAt);
   }
 
-  static fromMany(subscribers: IUser[]) {
-    return subscribers.map((user) => UserDto.fromAdmin(user));
+  static fromMany(users: UserComplete[]) {
+    return users.map((user) => UserDto.fromAdmin(user));
   }
 }

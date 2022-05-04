@@ -13,11 +13,11 @@ export default class UserCreateDto {
 
   static from(body: Partial<UserCreateDto>) {
     if (!body.email) {
-      throw new MissingFieldException('name');
+      throw new MissingFieldException('email');
     }
 
     if (!body.name) {
-      throw new MissingFieldException('email');
+      throw new MissingFieldException('name');
     }
 
     if (!body.password) {

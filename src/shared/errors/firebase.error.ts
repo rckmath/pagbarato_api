@@ -2,9 +2,10 @@ export class FirebaseIntegrationException extends Error {
   public readonly name = 'FirebaseIntegrationException';
   public readonly code;
 
-  constructor(code: string, message: string) {
-    super(message);
-    this.code = code;
+  constructor(baseError: any) {
+    const error = baseError.errorInfo || baseError;
+    super(error.message);
+    this.code = error.code || 500;
     Object.freeze(this);
   }
 }

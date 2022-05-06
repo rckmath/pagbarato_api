@@ -16,7 +16,7 @@ export type UserComplete = User & {
 };
 
 export interface IUserService<T extends UserDto> {
-  createOne(item: UserCreateDto): Promise<T>;
+  createOne(item: UserCreateDto): Promise<T | null>;
   findOne(item: UserFindOneDto): Promise<T | null>;
 }
 

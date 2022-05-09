@@ -3,17 +3,32 @@ import { injectable } from 'inversify';
 import { PrismaService } from '@database/prisma';
 
 import { UserEntity } from './user.entity';
-import { IUserRepository } from './user.interface';
+import { IUserRepository, User, UserComplete } from './user.interface';
+import { UserRoleType as PrismaUserRoleType } from '@prisma/client';
+import FirebaseClient from '@infra/firebase';
 
 @injectable()
-export class UserRepository<T extends UserEntity> implements IUserRepository<T> {
+export class UserRepository<T> implements IUserRepository<UserEntity> {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async create(_item: T): Promise<T> {
-    throw new Error('Method not implemented.');
+  async create(item: UserEntity): Promise<User> {
+    const userCreated = await this._prisma.user.create({
+      data: {
+        name: item.name,
+        birthDate: item.birthDate,
+        firebaseId: item.firebaseId,
+        role: item.role as PrismaUserRoleType,
+      },
+    });
+
+    return {
+      id: userCreated.id,
+      name: userCreated.name,
+      createdAt: userCreated.createdAt,
+    };
   }
 
-  async update(_id: string, _item: T): Promise<boolean> {
+  async update(_id: string, _item: Partial<T>): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 
@@ -21,11 +36,25 @@ export class UserRepository<T extends UserEntity> implements IUserRepository<T> 
     throw new Error('Method not implemented.');
   }
 
-  async find(_item: T): Promise<T[]> {
+  async find(_item: Partial<T>): Promise<User[]> {
     throw new Error('Method not implemented.');
   }
 
-  async findOne(_id: string): Promise<T> {
-    throw new Error('Method not implemented.');
+  async findOne(id: string): Promise<UserComplete | null> {
+    const foundUser = await this._prisma.user.findUnique({ where: { id } });
+
+    if (!foundUser) return foundUser;
+
+    const userFirebase = await FirebaseClient.auth().getUser(foundUser.firebaseId);
+
+    return {
+      id: foundUser.id,
+      role: foundUser.role,
+      name: foundUser.name,
+      email: userFirebase.email || '',
+      createdAt: foundUser.createdAt,
+      birthDate: foundUser.birthDate,
+      updatedAt: foundUser.updatedAt,
+    };
   }
 }

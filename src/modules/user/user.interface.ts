@@ -1,12 +1,29 @@
-import { IRead } from "@database/interfaces/read.interface";
-import { IWrite } from "@database/interfaces/write.interface";
-import { UserEntity } from "./user.entity";
+import { UserCreateDto, UserDto, UserFindOneDto } from './dtos';
+import { UserEntity } from './user.entity';
+import { UserRoleType } from './user.enum';
 
-export interface IUserDto {}
+export type User = {
+  id: string;
+  name: string;
+  createdAt: Date;
+};
 
-export interface IUserService<T extends UserEntity> {
-  createOne(item: T): Promise<T>;
-  getById(id: string): Promise<T>;
+export type UserComplete = User & {
+  email: string;
+  role: UserRoleType;
+  birthDate: Date | null;
+  updatedAt: Date;
+};
+
+export interface IUserService<T extends UserDto> {
+  createOne(item: UserCreateDto): Promise<T | null>;
+  findOne(item: UserFindOneDto): Promise<T | null>;
 }
 
-export interface IUserRepository<T extends UserEntity> extends IWrite<T>, IRead<T> {}
+export interface IUserRepository<T extends UserEntity> {
+  create(item: Partial<T>): Promise<User>;
+  update(id: string, item: Partial<T>): Promise<boolean>;
+  delete(id: string): Promise<boolean>;
+  find(item: Partial<T>): Promise<User[]>;
+  findOne(id: string): Promise<UserComplete | null>;
+}

@@ -22,7 +22,6 @@
     "paths": {
       "@root/*": ["./*"],
       "@src/*": ["./src/*"],
-      "@test/*": ["./test/*"],
       "@shared/*": ["./src/shared/*"],
       "@configs/*": ["./src/configs/*"],
       "@modules/*": ["./src/modules/*"],

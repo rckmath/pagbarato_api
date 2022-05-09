@@ -105,3 +105,6 @@ dist
 
 # Typescript compiled code
 dist/
+
+# Firebase credential
+serviceAccountKey.json

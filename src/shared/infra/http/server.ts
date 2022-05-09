@@ -1,10 +1,11 @@
 import helmet from 'helmet';
-import express, { NextFunction, Request, Response } from 'express';
+import * as express from 'express';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
-import routes from './api/public';
+import { Router } from './api';
 
+import { errorHandlerMiddleware } from './api';
 import '@user/user.controller';
 
 export default class Server {
@@ -24,21 +25,20 @@ export default class Server {
     );
     app.use(express.json());
     app.use(helmet());
-    app.use(routes);
+    app.use(Router);
   };
 
   private setErrorConfig = (app: express.Application) => {
-    app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-      console.error(err.stack);
-      res.status(500).send('Something broke!');
-    });
+    app.use(errorHandlerMiddleware);
   };
 
   public setup(): void {
-    this._server.setConfig(this.setConfig);
-    this._server.setErrorConfig(this.setErrorConfig);
-    this._server.build().listen(this._port, () => {
-      console.info(`Server is running on port ${this._port}`);
-    });
+    this._server
+      .setConfig(this.setConfig)
+      .setErrorConfig(this.setErrorConfig)
+      .build()
+      .listen(this._port, () => {
+        console.info(`Server is running on port ${this._port}`);
+      });
   }
 }

@@ -1,0 +1,44 @@
+version: '3.8'
+
+x-common_env: &common_env
+  PORT: ${PORT}
+  NODE_ENV: ${NODE_ENV}
+  DATABASE_USER: ${DATABASE_USER}
+  DATABASE_PASS: ${DATABASE_PASS}
+
+services:
+  db:
+    container_name: database
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASS}
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: base
+    depends_on:
+      - db
+    volumes:
+      - ./src:/home/node/app/src
+      - ./nodemon.json:/home/node/app/nodemon.json
+    expose:
+      - '3000'
+    ports:
+      - '3000:3000'
+    links:
+      - db
+    command: >
+      sh -c "npm run migrate:dev && npm run dev"
+
+volumes:
+  db:
+    driver: local

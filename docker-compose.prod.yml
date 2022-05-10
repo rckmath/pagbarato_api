@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  pagbarato:
+    build:
+      target: production
+    command: node dist/index.js

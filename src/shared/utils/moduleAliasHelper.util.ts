@@ -1,18 +1,19 @@
 import * as path from 'path';
 import moduleAlias from 'module-alias';
 
+import Constants from '../../configs/constants.config';
+
 const files = path.resolve(__dirname, '../../..');
+const prefix = Constants.env?.trim() == 'production' ? 'dist' : 'src';
 
 moduleAlias.addAliases({
   '@root': path.join(files, '.'),
-  '@src': path.join(files, 'src'),
-  '@test': path.join(files, 'test'),
-  '@shared': path.join(files, 'src/shared'),
-  '@configs': path.join(files, 'src/configs'),
-  '@modules': path.join(files, 'src/modules'),
-  '@user': path.join(files, 'src/modules/user'),
-  '@infra': path.join(files, 'src/shared/infra'),
-  '@utils': path.join(files, 'src/shared/utils'),
-  '@http': path.join(files, 'src/shared/infra/http'),
-  '@database': path.join(files, 'src/shared/infra/database'),
+  '@shared': path.join(files, `${prefix}/shared`),
+  '@configs': path.join(files, `${prefix}/configs`),
+  '@modules': path.join(files, `${prefix}/modules`),
+  '@user': path.join(files, `${prefix}/modules/user`),
+  '@infra': path.join(files, `${prefix}/shared/infra`),
+  '@utils': path.join(files, `${prefix}/shared/utils`),
+  '@http': path.join(files, `${prefix}/shared/infra/http`),
+  '@database': path.join(files, `${prefix}/shared/infra/database`),
 });

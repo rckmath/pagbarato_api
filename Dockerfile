@@ -1,15 +1,22 @@
-FROM node:16-alpine as base
+FROM node:lts-alpine as base
 
 WORKDIR /home/node/app
 
 COPY package*.json ./
+COPY prisma ./prisma/
 
-RUN npm i
+FROM base as development
+
+RUN npm install -g nodemon && npm install
 
 COPY . .
 
 FROM base as production
 
-ENV NODE_PATH=./build
+RUN npm ci
+
+COPY . .
+
+ENV NODE_PATH=./dist
 
 RUN npm run build

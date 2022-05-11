@@ -1,4 +1,4 @@
-import { MissingFieldException } from '@root/src/shared/errors';
+import { MissingFieldException } from '@shared/errors';
 import { UserComplete } from '../user.interface';
 
 export default class UserDto {

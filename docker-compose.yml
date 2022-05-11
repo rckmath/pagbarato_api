@@ -24,7 +24,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: base
+      target: development
     depends_on:
       - db
     volumes:
@@ -32,12 +32,15 @@ services:
       - ./nodemon.json:/home/node/app/nodemon.json
     expose:
       - '3000'
+      - '9229'
     ports:
       - '3000:3000'
+      - '9229:9229'
     links:
       - db
-    command: >
-      sh -c "npm run migrate:dev && npm run dev"
+    environment:
+      NODE_ENV: development
+    command: npm run dev
 
 volumes:
   db:

@@ -1,7 +1,11 @@
 version: '3.8'
 
 services:
-  pagbarato:
+  app:
     build:
       target: production
-    command: node dist/index.js
+    environment:
+      NODE_ENV: production
+    command: npm run start:migrate
+    
+    

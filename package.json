@@ -1,0 +1,71 @@
+{
+  "name": "pagbarato_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "jest",
+    "prepare": "husky install",
+    "lint": "eslint . --ext .ts",
+    "start": "node dist/index.js",
+    "start:migrate": "npx prisma migrate deploy && npm run start",
+    "test:watch": "jest --watch --verbose",
+    "migrate:dev": "npx prisma migrate dev",
+    "lint:fix": "eslint ./src ./test --ext .ts --fix",
+    "dev": "npm run migrate:dev && nodemon -L src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rckmath/pagbarato_api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rckmath/pagbarato_api/issues"
+  },
+  "homepage": "https://github.com/rckmath/pagbarato_api#readme",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^8.14.0",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.4.1",
+    "@types/module-alias": "^2.0.1",
+    "@types/node": "^17.0.23",
+    "@types/supertest": "^2.0.12",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^7.0.4",
+    "jest": "^27.5.1",
+    "lint-staged": "^12.3.7",
+    "nodemon": "^2.0.16",
+    "prisma": "^3.14.0",
+    "prisma-erd-generator": "^0.11.0",
+    "supertest": "^6.2.2",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.6.2"
+  },
+  "dependencies": {
+    "@prisma/client": "^3.14.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "firebase-admin": "^10.1.0",
+    "helmet": "^5.0.2",
+    "inversify": "^6.0.1",
+    "inversify-express-utils": "^6.4.3",
+    "jest-mock-extended": "^2.0.5",
+    "module-alias": "^2.2.2",
+    "reflect-metadata": "^0.1.13"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "npm i eslint",
+      "npm i prettier --write",
+      "npm run test --watchAll=false --findRelatedTests --bail"
+    ]
+  }
+}

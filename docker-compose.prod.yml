@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      target: production
+    environment:
+      NODE_ENV: production
+    command: npm run start:migrate
+    
+    

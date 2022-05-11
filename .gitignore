@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Typescript compiled code
+dist/
+
+# Firebase credential
+serviceAccountKey.json

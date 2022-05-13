@@ -1,5 +1,5 @@
 import { MissingFieldException } from '@shared/errors';
-import { UserComplete } from '../user.interface';
+import { IUser } from '../user.interface';
 
 export default class UserDto {
   constructor(
@@ -12,7 +12,7 @@ export default class UserDto {
     public readonly updatedAt?: Date
   ) {}
 
-  static from(user: Partial<UserComplete>) {
+  static from(user: Partial<IUser>) {
     if (!user.id) throw new MissingFieldException('id');
     if (!user.name) throw new MissingFieldException('name');
     if (!user.createdAt) throw new MissingFieldException('createdAt');
@@ -20,11 +20,11 @@ export default class UserDto {
     return new UserDto(user.id, user.name, user.createdAt, user.email, user.birthDate);
   }
 
-  static fromAdmin(user: UserComplete) {
+  static fromAdmin(user: IUser) {
     return new UserDto(user.id, user.name, user.createdAt, user.email, user.birthDate, user.role, user.updatedAt);
   }
 
-  static fromMany(users: UserComplete[]) {
+  static fromMany(users: Array<IUser>) {
     return users.map((user) => UserDto.fromAdmin(user));
   }
 }

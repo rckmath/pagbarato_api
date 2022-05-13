@@ -3,17 +3,15 @@ import { inject, injectable } from 'inversify';
 import { IUserRepository, IUserService } from './user.interface';
 
 import { TYPES } from '@shared/ioc/types.ioc';
-import { UserEntity } from './user.entity';
-import { UserCreateDto, UserDto, UserFindOneDto } from './dtos';
+import { UserCreateDto, UserDeleteDto, UserDto, UserFindManyDto, UserFindOneDto, UserUpdateDto } from './dtos';
 
 import FirebaseClient from '@infra/firebase';
 import { FirebaseIntegrationException, NotFoundException } from '@shared/errors';
 import { FIREBASE_ERROR_MESSAGE } from './user.errors';
 
 @injectable()
-export class UserService<T extends UserDto> implements IUserService<T> {
-  constructor(@inject(TYPES.IUserRepository) private readonly _repository: IUserRepository<UserEntity>) {}
-
+export class UserService implements IUserService {
+  constructor(@inject(TYPES.IUserRepository) private readonly _repository: IUserRepository) {}
   async createUserOnFirebase(user: UserCreateDto): Promise<string> {
     let firebaseUserId = null;
 
@@ -36,16 +34,40 @@ export class UserService<T extends UserDto> implements IUserService<T> {
     return firebaseUserId;
   }
 
-  async createOne(user: UserCreateDto): Promise<T | null> {
-    const firebaseId: string = await this.createUserOnFirebase(user);
-    const userEntity = UserEntity.create({ ...user, firebaseId });
-    const response = await this._repository.create(userEntity);
-    return this.findOne({ id: response.id });
+  async createOne(user: UserCreateDto): Promise<UserDto> {
+    user.firebaseId = await this.createUserOnFirebase(user);
+    const response = await this._repository.create(user);
+    return this.findOne({ id: response.id as string });
   }
 
-  async findOne(user: UserFindOneDto): Promise<T | null> {
+  async findOne(user: UserFindOneDto): Promise<UserDto> {
     const foundUser = await this._repository.findOne(user.id);
     if (!foundUser) throw new NotFoundException('User');
-    return UserDto.from(foundUser) as T;
+    return UserDto.from(foundUser);
+  }
+
+  async findMany(user: UserFindManyDto): Promise<Array<UserDto>> {
+    const foundUsers = await this._repository.find(user);
+    return UserDto.fromMany(foundUsers);
+  }
+
+  async updateOne(item: UserUpdateDto): Promise<void> {
+    await this.findOne({ id: item.id });
+    throw new Error('Method not implemented.');
+  }
+
+  async delete(item: UserDeleteDto): Promise<void> {
+    const idList = item.id as Array<string>;
+
+    const userList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
+
+    if (userList.length) {
+      const firebasePromises = userList.map(async (user) => {
+        if (!user) return;
+        return FirebaseClient.auth().deleteUser(user.firebaseId);
+      });
+
+      await Promise.all([...firebasePromises, this._repository.delete(idList)]);
+    }
   }
 }

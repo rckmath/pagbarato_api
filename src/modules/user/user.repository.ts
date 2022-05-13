@@ -2,59 +2,43 @@ import { injectable } from 'inversify';
 
 import { PrismaService } from '@database/prisma';
 
-import { UserEntity } from './user.entity';
-import { IUserRepository, User, UserComplete } from './user.interface';
+import { IUserRepository, IUser } from './user.interface';
 import { UserRoleType as PrismaUserRoleType } from '@prisma/client';
-import FirebaseClient from '@infra/firebase';
+import { UserCreateDto } from './dtos';
 
 @injectable()
-export class UserRepository<T> implements IUserRepository<UserEntity> {
+export class UserRepository implements IUserRepository {
   constructor(private readonly _prisma: PrismaService) {}
 
-  async create(item: UserEntity): Promise<User> {
-    const userCreated = await this._prisma.user.create({
+  async create(item: UserCreateDto): Promise<Partial<IUser>> {
+    const user = await this._prisma.user.create({
       data: {
         name: item.name,
+        email: item.email,
         birthDate: item.birthDate,
-        firebaseId: item.firebaseId,
+        firebaseId: item.firebaseId as string,
         role: item.role as PrismaUserRoleType,
       },
     });
 
-    return {
-      id: userCreated.id,
-      name: userCreated.name,
-      createdAt: userCreated.createdAt,
-    };
+    return user as Partial<IUser>;
   }
 
-  async update(_id: string, _item: Partial<T>): Promise<boolean> {
+  async update(_id: string, _item: Partial<IUser>): Promise<void> {
     throw new Error('Method not implemented.');
   }
 
-  async delete(_id: string): Promise<boolean> {
+  async delete(idList: Array<string>): Promise<void> {
+    await this._prisma.user.deleteMany({ where: { id: { in: idList } } });
+  }
+
+  async find(_item: Partial<IUser>): Promise<Array<IUser>> {
     throw new Error('Method not implemented.');
   }
 
-  async find(_item: Partial<T>): Promise<User[]> {
-    throw new Error('Method not implemented.');
-  }
-
-  async findOne(id: string): Promise<UserComplete | null> {
-    const foundUser = await this._prisma.user.findUnique({ where: { id } });
-
-    if (!foundUser) return foundUser;
-
-    const userFirebase = await FirebaseClient.auth().getUser(foundUser.firebaseId);
-
-    return {
-      id: foundUser.id,
-      role: foundUser.role,
-      name: foundUser.name,
-      email: userFirebase.email || '',
-      createdAt: foundUser.createdAt,
-      birthDate: foundUser.birthDate,
-      updatedAt: foundUser.updatedAt,
-    };
+  async findOne(id: string): Promise<IUser | null> {
+    const foundUser: IUser | null = await this._prisma.user.findUnique({ where: { id } });
+    if (!foundUser) return null;
+    return foundUser as IUser;
   }
 }

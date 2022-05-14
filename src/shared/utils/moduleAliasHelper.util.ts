@@ -16,4 +16,5 @@ moduleAlias.addAliases({
   '@utils': path.join(files, `${prefix}/shared/utils`),
   '@http': path.join(files, `${prefix}/shared/infra/http`),
   '@database': path.join(files, `${prefix}/shared/infra/database`),
+  '@establishment': path.join(files, `${prefix}/modules/establishment`),
 });

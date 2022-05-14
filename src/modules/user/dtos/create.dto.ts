@@ -1,4 +1,4 @@
-import { UserRoleType } from '@prisma/client';
+import { UserRoleType } from '../user.enum';
 import { MissingFieldException } from '@shared/errors';
 
 export default class UserCreateDto {

@@ -7,6 +7,7 @@ import { Router } from './api';
 
 import { errorHandlerMiddleware } from './api';
 import '@user/user.controller';
+import '@establishment/establishment.controller';
 
 export default class Server {
   private readonly _server: InversifyExpressServer;

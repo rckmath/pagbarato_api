@@ -3,6 +3,6 @@ export class InvalidFieldException extends Error {
 
   constructor(fieldName: string, fieldValue?: string | number) {
     super('Invalid ' + fieldName + (fieldValue ? `: ${fieldValue}.` : '.'));
-    Object.freeze(this)
+    Object.freeze(this);
   }
 }

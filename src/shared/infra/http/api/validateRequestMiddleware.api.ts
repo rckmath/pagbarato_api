@@ -11,19 +11,11 @@ export default class ValidateRequestMiddleware extends BaseMiddleware {
   }
 
   public execute(req: Request, _: Response, next: NextFunction): void | Promise<void> {
-    if (this._withParams) {
-      req.body = {
-        ...req.body,
-        ...req.params,
-      };
-    }
-
-    if (this._withQuery) {
-      req.body = {
-        ...req.body,
-        ...req.query,
-      };
-    }
+    req.body = {
+      ...req.body,
+      ...(this._withParams && req.params),
+      ...(this._withQuery && req.query),
+    };
 
     req.body = this._DtoClass.from(req.body);
 

@@ -27,7 +27,8 @@
       "@utils/*": ["./src/shared/utils/*"],
       "@infra/*": ["./src/shared/infra/*"],
       "@http/*": ["./src/shared/infra/http/*"],
-      "@database/*": ["./src/shared/infra/database/*"]
+      "@database/*": ["./src/shared/infra/database/*"],
+      "@establishment/*": ["./src/modules/establishment/*"],
     },
     "rootDirs": [
       "./src",

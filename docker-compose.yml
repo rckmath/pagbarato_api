@@ -2,7 +2,6 @@ version: '3.8'
 
 x-common_env: &common_env
   PORT: ${PORT}
-  NODE_ENV: ${NODE_ENV}
   DATABASE_USER: ${DATABASE_USER}
   DATABASE_PASS: ${DATABASE_PASS}
 

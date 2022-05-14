@@ -5,8 +5,9 @@ export default class UserDto {
   constructor(
     public readonly id: string,
     public readonly name: string,
+    public readonly email: string,
+    public readonly preferredSearchRange: number,
     public readonly createdAt: Date,
-    public readonly email?: string,
     public readonly birthDate?: Date | null,
     public readonly role?: string,
     public readonly updatedAt?: Date
@@ -15,13 +16,24 @@ export default class UserDto {
   static from(user: Partial<IUser>) {
     if (!user.id) throw new MissingFieldException('id');
     if (!user.name) throw new MissingFieldException('name');
+    if (!user.email) throw new MissingFieldException('email');
     if (!user.createdAt) throw new MissingFieldException('createdAt');
+    if (!user.preferredSearchRange) throw new MissingFieldException('preferredSearchRange');
 
-    return new UserDto(user.id, user.name, user.createdAt, user.email, user.birthDate);
+    return new UserDto(user.id, user.name, user.email, user.preferredSearchRange.toNumber(), user.createdAt, user.birthDate);
   }
 
   static fromAdmin(user: IUser) {
-    return new UserDto(user.id, user.name, user.createdAt, user.email, user.birthDate, user.role, user.updatedAt);
+    return new UserDto(
+      user.id,
+      user.name,
+      user.email,
+      user.preferredSearchRange.toNumber(),
+      user.createdAt,
+      user.birthDate,
+      user.role,
+      user.updatedAt
+    );
   }
 
   static fromMany(users: Array<IUser>) {

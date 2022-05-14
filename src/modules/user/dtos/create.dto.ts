@@ -6,8 +6,9 @@ export default class UserCreateDto {
     public readonly name: string,
     public readonly email: string,
     public readonly password: string,
-    public readonly birthDate?: Date | null,
-    public readonly role?: UserRoleType,
+    public readonly birthDate: Date | null = null,
+    public readonly preferredSearchRange: number = 5.0,
+    public readonly role: UserRoleType = UserRoleType.CONSUMER,
     public firebaseId?: string
   ) {}
 
@@ -15,6 +16,6 @@ export default class UserCreateDto {
     if (!body.email) throw new MissingFieldException('email');
     if (!body.name) throw new MissingFieldException('name');
     if (!body.password) throw new MissingFieldException('password');
-    return new UserCreateDto(body.name, body.email, body.password, body.birthDate, body.role);
+    return new UserCreateDto(body.name, body.email, body.password, body.birthDate, body.preferredSearchRange, body.role);
   }
 }

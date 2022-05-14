@@ -46,9 +46,13 @@ export class UserService implements IUserService {
     return UserDto.from(foundUser);
   }
 
-  async findMany(user: UserFindManyDto): Promise<Array<UserDto>> {
-    const foundUsers = await this._repository.find(user);
+  async findMany(searchParameters: UserFindManyDto): Promise<Array<UserDto>> {
+    const foundUsers = await this._repository.find(searchParameters);
     return UserDto.fromMany(foundUsers);
+  }
+
+  async count(searchParameters: UserFindManyDto): Promise<number> {
+    return this._repository.count(searchParameters);
   }
 
   async updateOne(item: UserUpdateDto): Promise<void> {

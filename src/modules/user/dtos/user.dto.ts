@@ -6,7 +6,7 @@ export default class UserDto {
     public readonly id: string,
     public readonly name: string,
     public readonly email: string,
-    public readonly preferredSearchRange: number,
+    public readonly preferredSearchRangeInKm: number,
     public readonly createdAt: Date,
     public readonly birthDate?: Date | null,
     public readonly role?: string,
@@ -18,9 +18,9 @@ export default class UserDto {
     if (!user.name) throw new MissingFieldException('name');
     if (!user.email) throw new MissingFieldException('email');
     if (!user.createdAt) throw new MissingFieldException('createdAt');
-    if (!user.preferredSearchRange) throw new MissingFieldException('preferredSearchRange');
+    if (!user.preferredSearchRangeInKm) throw new MissingFieldException('preferredSearchRangeInKm');
 
-    return new UserDto(user.id, user.name, user.email, user.preferredSearchRange.toNumber(), user.createdAt, user.birthDate);
+    return new UserDto(user.id, user.name, user.email, user.preferredSearchRangeInKm.toNumber(), user.createdAt, user.birthDate);
   }
 
   static fromAdmin(user: IUser) {
@@ -28,7 +28,7 @@ export default class UserDto {
       user.id,
       user.name,
       user.email,
-      user.preferredSearchRange.toNumber(),
+      user.preferredSearchRangeInKm.toNumber(),
       user.createdAt,
       user.birthDate,
       user.role,

@@ -4,7 +4,7 @@ import { PrismaService } from '@database/prisma';
 
 import { IUserRepository, IUser } from './user.interface';
 import { UserRoleType as PrismaUserRoleType, Prisma } from '@prisma/client';
-import { UserCreateDto, UserFindManyDto } from './dtos';
+import { UserCreateDto, UserFindManyDto, UserUpdateDto } from './dtos';
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -18,15 +18,24 @@ export class UserRepository implements IUserRepository {
         birthDate: item.birthDate,
         firebaseId: item.firebaseId as string,
         role: item.role as PrismaUserRoleType,
-        preferredSearchRange: new Prisma.Decimal(item.preferredSearchRange),
+        preferredSearchRangeInKm: new Prisma.Decimal(item.preferredSearchRangeInKm),
       },
     });
 
     return user as Partial<IUser>;
   }
 
-  async update(_id: string, _item: Partial<IUser>): Promise<void> {
-    throw new Error('Method not implemented.');
+  async update(id: string, item: UserUpdateDto): Promise<void> {
+    await this._prisma.user.update({
+      where: { id },
+      data: {
+        name: item.name,
+        email: item.email,
+        birthDate: item.birthDate,
+        role: item.role ? (item.role as PrismaUserRoleType) : undefined,
+        preferredSearchRangeInKm: item.preferredSearchRangeInKm ? new Prisma.Decimal(item.preferredSearchRangeInKm) : undefined,
+      },
+    });
   }
 
   async delete(idList: Array<string>): Promise<void> {
@@ -53,8 +62,6 @@ export class UserRepository implements IUserRepository {
 
   async count(searchParameters: UserFindManyDto): Promise<number> {
     const userCount = await this._prisma.user.count({
-      skip: searchParameters.skip,
-      take: searchParameters.pageSize,
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },

@@ -9,12 +9,13 @@ import {
   Controller,
   httpGet,
   httpDelete,
+  httpPut,
 } from 'inversify-express-utils';
 
 import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IUserService } from './user.interface';
-import { UserCreateDto, UserFindOneDto, UserDeleteDto, UserFindManyDto, UserDto } from './dtos';
+import { UserCreateDto, UserFindOneDto, UserDeleteDto, UserFindManyDto, UserDto, UserUpdateDto } from './dtos';
 
 import { BaseHttpResponse } from '@http/api';
 import { ValidateRequestMiddleware } from '@http/api';
@@ -48,6 +49,13 @@ export class UserController extends BaseHttpController implements Controller {
   @httpGet('/:id', ValidateRequestMiddleware.withParams(UserFindOneDto))
   public async getById(@request() req: express.Request, @response() res: express.Response) {
     const user = await this._userService.findOne(req.body);
+    const response = BaseHttpResponse.success(user);
+    return res.json(response);
+  }
+
+  @httpPut('/:id', ValidateRequestMiddleware.withParams(UserUpdateDto))
+  public async updateById(@request() req: express.Request, @response() res: express.Response) {
+    const user = await this._userService.updateOne(req.body);
     const response = BaseHttpResponse.success(user);
     return res.json(response);
   }

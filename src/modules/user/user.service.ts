@@ -57,7 +57,7 @@ export class UserService implements IUserService {
 
   async updateOne(item: UserUpdateDto): Promise<void> {
     await this.findOne({ id: item.id });
-    throw new Error('Method not implemented.');
+    return this._repository.update(item.id, item);
   }
 
   async delete(item: UserDeleteDto): Promise<void> {
@@ -67,8 +67,7 @@ export class UserService implements IUserService {
 
     if (userList.length) {
       const firebasePromises = userList.map(async (user) => {
-        if (!user) return;
-        return FirebaseClient.auth().deleteUser(user.firebaseId);
+        if (user) return FirebaseClient.auth().deleteUser(user.firebaseId);
       });
 
       await Promise.all([...firebasePromises, this._repository.delete(idList)]);

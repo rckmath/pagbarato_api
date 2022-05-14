@@ -7,7 +7,7 @@ export interface IUser {
   firebaseId: string;
   name: string;
   email: string;
-  preferredSearchRange: Prisma.Decimal;
+  preferredSearchRangeInKm: Prisma.Decimal;
   role: UserRoleType;
   birthDate: Date | null;
   createdAt: Date;

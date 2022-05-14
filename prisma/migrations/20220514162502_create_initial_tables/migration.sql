@@ -12,7 +12,7 @@ CREATE TABLE "User" (
     "name" VARCHAR(100) NOT NULL,
     "role" "UserRoleType" NOT NULL DEFAULT E'CONSUMER',
     "birthDate" TIMESTAMP(3),
-    "preferredSearchRange" DECIMAL(4,2) NOT NULL,
+    "preferredSearchRangeInKm" DECIMAL(4,2) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),

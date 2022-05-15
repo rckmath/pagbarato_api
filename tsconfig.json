@@ -27,6 +27,7 @@
       "@utils/*": ["./src/shared/utils/*"],
       "@infra/*": ["./src/shared/infra/*"],
       "@http/*": ["./src/shared/infra/http/*"],
+      "@product/*": ["./src/modules/product/*"],
       "@database/*": ["./src/shared/infra/database/*"],
       "@establishment/*": ["./src/modules/establishment/*"],
     },

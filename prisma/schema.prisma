@@ -30,7 +30,7 @@ model User {
   name  String       @db.VarChar(100)
   role  UserRoleType @default(CONSUMER)
 
-  birthDate            DateTime?
+  birthDate                DateTime?
   preferredSearchRangeInKm Decimal   @db.Decimal(4, 2)
 
   createdAt DateTime  @default(now())

@@ -5,8 +5,10 @@
 
 ## **How to run**
 1. Clone the project
-2. Open the terminal inside project's root folder
-3. Run "docker-compose build" and wait until the container is settled up
+2. Create a .env file with your private/secret credentials
+3. Open the terminal inside project's root folder
+4. Run "docker-compose build" and wait until the container is settled up
+5. Run the containers according to your operational system
 ### **Linux Users**
 #### For starting the container, use:
 - Run "make up" command for run the container in development mode

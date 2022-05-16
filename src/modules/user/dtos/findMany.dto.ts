@@ -33,7 +33,7 @@ export default class UserFindManyDto extends BaseFindManyDto {
     }
 
     if (body.role && typeof body.role == 'string') {
-      role = body.role.split(',');
+      role = body.role.split(',') as Array<UserRoleType>;
     }
 
     if (body.page) {
@@ -59,7 +59,7 @@ export default class UserFindManyDto extends BaseFindManyDto {
       body.email,
       body.birthDate,
       id,
-      role
+      role 
     );
   }
 }

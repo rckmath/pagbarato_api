@@ -1,10 +1,12 @@
 import { MissingFieldException } from '@shared/errors';
+import { ProductUnitType } from '../product.enum';
 
-export default class EstablishmentCreateDto {
-  constructor(public readonly name: string) {}
+export default class ProductCreateDto {
+  constructor(public readonly name: string, public readonly unit: ProductUnitType) {}
 
-  static from(body: Partial<EstablishmentCreateDto>) {
+  static from(body: Partial<ProductCreateDto>) {
     if (!body.name) throw new MissingFieldException('name');
-    return new EstablishmentCreateDto(body.name);
+    if (!body.unit) throw new MissingFieldException('unit');
+    return new ProductCreateDto(body.name, body.unit);
   }
 }

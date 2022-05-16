@@ -13,6 +13,7 @@ export class ProductRepository implements IProductRepository {
     const product = await this._prisma.product.create({
       data: {
         name: item.name,
+        unit: item.unit,
       },
     });
 
@@ -24,6 +25,7 @@ export class ProductRepository implements IProductRepository {
       where: { id },
       data: {
         name: item.name,
+        unit: item.unit,
       },
     });
   }

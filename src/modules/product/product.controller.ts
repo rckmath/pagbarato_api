@@ -15,14 +15,7 @@ import {
 import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IProductService } from './product.interface';
-import {
-  ProductCreateDto,
-  ProductFindOneDto,
-  ProductDeleteDto,
-  ProductFindManyDto,
-  ProductDto,
-  ProductUpdateDto,
-} from './dtos';
+import { ProductCreateDto, ProductFindOneDto, ProductDeleteDto, ProductFindManyDto, ProductDto, ProductUpdateDto } from './dtos';
 
 import { BaseHttpResponse } from '@http/api';
 import { ValidateRequestMiddleware } from '@http/api';

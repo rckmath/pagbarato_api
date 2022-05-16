@@ -1,8 +1,10 @@
 import { ProductCreateDto, ProductFindManyDto, ProductFindOneDto, ProductDeleteDto, ProductUpdateDto, ProductDto } from './dtos';
+import { ProductUnitType } from './product.enum';
 
 export interface IProduct {
   id: string;
   name: string;
+  unit: ProductUnitType;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -1,26 +1,21 @@
 import { InvalidFieldException } from '@shared/errors';
-import { BaseFindManyDto } from '@shared/infra/http/dto';
+import { BaseFindManyDto } from '@http/dto';
 import { isValidUUID } from '@shared/utils';
-import { UserRoleType } from '../user.enum';
 
-export default class UserFindManyDto extends BaseFindManyDto {
+export default class ProductFindManyDto extends BaseFindManyDto {
   constructor(
     page?: number,
     pageSize?: number,
     orderBy?: string,
     orderDescending?: boolean,
     public readonly name?: string,
-    public readonly email?: string,
-    public readonly birthDate?: Date,
-    public readonly id?: string | Array<string>,
-    public readonly role?: UserRoleType | Array<UserRoleType>
+    public readonly id?: string | Array<string>
   ) {
     super(page, pageSize, orderBy, orderDescending);
   }
 
-  static from(body: Partial<UserFindManyDto>) {
+  static from(body: Partial<ProductFindManyDto>) {
     let id;
-    let role;
 
     if (body.id) {
       if (typeof body.id == 'string') id = body.id.split(',');
@@ -30,10 +25,6 @@ export default class UserFindManyDto extends BaseFindManyDto {
           if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
         });
       }
-    }
-
-    if (body.role && typeof body.role == 'string') {
-      role = body.role.split(',') as Array<UserRoleType>;
     }
 
     if (body.page) {
@@ -50,16 +41,6 @@ export default class UserFindManyDto extends BaseFindManyDto {
       body.orderDescending = JSON.parse(body.orderDescending);
     }
 
-    return new UserFindManyDto(
-      body.page,
-      body.pageSize,
-      body.orderBy,
-      body.orderDescending,
-      body.name,
-      body.email,
-      body.birthDate,
-      id,
-      role 
-    );
+    return new ProductFindManyDto(body.page, body.pageSize, body.orderBy, body.orderDescending, body.name, id);
   }
 }

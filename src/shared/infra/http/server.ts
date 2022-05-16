@@ -6,7 +6,9 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 import { Router } from './api';
 
 import { errorHandlerMiddleware } from './api';
+
 import '@user/user.controller';
+import '@product/product.controller';
 import '@establishment/establishment.controller';
 
 export default class Server {

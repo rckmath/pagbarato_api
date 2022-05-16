@@ -14,9 +14,16 @@ export default class UserUpdateDto {
   ) {}
 
   static from(body: Partial<UserUpdateDto>) {
-    console.log(body.id);
     if (!body.id) throw new MissingFieldException('id');
     if (body.id && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
-    return new UserUpdateDto(body.id, body.name, body.email, body.role, body.birthDate, body.preferredSearchRangeInKm, body.password);
+    return new UserUpdateDto(
+      body.id,
+      body.name,
+      body.email,
+      body.role,
+      body.birthDate,
+      body.preferredSearchRangeInKm,
+      body.password
+    );
   }
 }

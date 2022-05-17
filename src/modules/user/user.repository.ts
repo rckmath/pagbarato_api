@@ -3,7 +3,7 @@ import { injectable } from 'inversify';
 import { PrismaService } from '@database/prisma';
 
 import { IUserRepository, IUser } from './user.interface';
-import { UserRoleType as PrismaUserRoleType, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { UserCreateDto, UserFindManyDto, UserUpdateDto } from './dtos';
 
 @injectable()
@@ -43,6 +43,8 @@ export class UserRepository implements IUserRepository {
   }
 
   async find(searchParameters: UserFindManyDto): Promise<Array<IUser>> {
+    console.log(searchParameters);
+
     const users = await this._prisma.user.findMany({
       skip: searchParameters.skip,
       take: searchParameters.pageSize,
@@ -50,10 +52,10 @@ export class UserRepository implements IUserRepository {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
       where: {
-        id: { in: searchParameters.id },
         name: { contains: searchParameters.name },
         email: { contains: searchParameters.email },
-        role: { in: searchParameters.role },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
       },
     });
 
@@ -66,10 +68,10 @@ export class UserRepository implements IUserRepository {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
       where: {
-        id: { in: searchParameters.id },
         name: { contains: searchParameters.name },
         email: { contains: searchParameters.email },
-        role: { in: searchParameters.role as Array<PrismaUserRoleType> },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
       },
     });
 
@@ -78,7 +80,6 @@ export class UserRepository implements IUserRepository {
 
   async findOne(id: string): Promise<IUser | null> {
     const foundUser: IUser | null = await this._prisma.user.findUnique({ where: { id } });
-    if (!foundUser) return null;
     return foundUser as IUser;
   }
 }

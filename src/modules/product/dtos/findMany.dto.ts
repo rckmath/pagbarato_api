@@ -1,6 +1,6 @@
 import { InvalidFieldException } from '@shared/errors';
 import { BaseFindManyDto } from '@http/dto';
-import { isValidUUID } from '@shared/utils';
+import { arraySplitter, isValidUUID, stringToNumberConversor } from '@shared/utils';
 
 export default class ProductFindManyDto extends BaseFindManyDto {
   constructor(
@@ -15,31 +15,15 @@ export default class ProductFindManyDto extends BaseFindManyDto {
   }
 
   static from(body: Partial<ProductFindManyDto>) {
-    let id;
+    const id = arraySplitter<string>(body.id);
 
-    if (body.id) {
-      if (typeof body.id == 'string') id = body.id.split(',');
+    id.forEach((x) => {
+      if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
+    });
 
-      if (id) {
-        id.forEach((x) => {
-          if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
-        });
-      }
-    }
-
-    if (body.page) {
-      if (body.page < 1) throw new InvalidFieldException('page', body.page);
-      if (typeof body.page == 'string') body.page = parseInt(body.page);
-    }
-
-    if (body.pageSize) {
-      if (body.pageSize < 1) throw new InvalidFieldException('pageSize', body.pageSize);
-      if (typeof body.pageSize == 'string') body.pageSize = parseInt(body.pageSize);
-    }
-
-    if (body.orderDescending && typeof body.orderDescending == 'string') {
-      body.orderDescending = JSON.parse(body.orderDescending);
-    }
+    body.page = stringToNumberConversor(body.page, false, 1, 'page');
+    body.pageSize = stringToNumberConversor(body.pageSize, false, 1, 'pageSize');
+    body.orderDescending = body.orderDescending && typeof body.orderDescending == 'string' && JSON.parse(body.orderDescending);
 
     return new ProductFindManyDto(body.page, body.pageSize, body.orderBy, body.orderDescending, body.name, id);
   }

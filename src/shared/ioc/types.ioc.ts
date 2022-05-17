@@ -1,9 +1,11 @@
 const TYPES = {
   IUserService: Symbol('IUserService'),
-  IUserRepository: Symbol('IUserRepository'),
+  IPriceService: Symbol('IPriceService'),
   IProductService: Symbol('IProductService'),
-  IProductRepository: Symbol('IProductRepository'),
   IEstablishmentService: Symbol('IEstablishmentService'),
+  IUserRepository: Symbol('IUserRepository'),
+  IPriceRepository: Symbol('IPriceRepository'),
+  IProductRepository: Symbol('IProductRepository'),
   IEstablishmentRepository: Symbol('IEstablishmentRepository'),
 };
 

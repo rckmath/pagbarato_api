@@ -26,6 +26,7 @@
       "@user/*": ["./src/modules/user/*"],
       "@utils/*": ["./src/shared/utils/*"],
       "@infra/*": ["./src/shared/infra/*"],
+      "@price/*": ["./src/modules/price/*"],
       "@http/*": ["./src/shared/infra/http/*"],
       "@product/*": ["./src/modules/product/*"],
       "@database/*": ["./src/shared/infra/database/*"],

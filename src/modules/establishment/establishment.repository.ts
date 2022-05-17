@@ -45,8 +45,8 @@ export class EstablishmentRepository implements IEstablishmentRepository {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
       where: {
-        id: { in: searchParameters.id },
         name: { contains: searchParameters.name },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
 
@@ -59,8 +59,8 @@ export class EstablishmentRepository implements IEstablishmentRepository {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
       where: {
-        id: { in: searchParameters.id },
         name: { contains: searchParameters.name },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
 

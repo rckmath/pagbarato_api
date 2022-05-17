@@ -42,8 +42,8 @@ export class ProductRepository implements IProductRepository {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
       where: {
-        id: { in: searchParameters.id },
         name: { contains: searchParameters.name },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
 
@@ -56,8 +56,8 @@ export class ProductRepository implements IProductRepository {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
       where: {
-        id: { in: searchParameters.id },
         name: { contains: searchParameters.name },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
 

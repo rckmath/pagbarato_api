@@ -62,15 +62,9 @@ export class UserService implements IUserService {
 
   async delete(item: UserDeleteDto): Promise<void> {
     const idList = item.id as Array<string>;
-
     const userList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
-
-    if (userList.length) {
-      const firebasePromises = userList.map(async (user) => {
-        if (user) return FirebaseClient.auth().deleteUser(user.firebaseId);
-      });
-
-      await Promise.all([...firebasePromises, this._repository.delete(idList)]);
-    }
+    if (!userList.length) return;
+    const firebasePromises = userList.map(async (user) => user && FirebaseClient.auth().deleteUser(user.firebaseId));
+    await Promise.all([...firebasePromises, this._repository.delete(idList)]);
   }
 }

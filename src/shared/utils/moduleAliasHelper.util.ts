@@ -14,6 +14,7 @@ moduleAlias.addAliases({
   '@user': path.join(files, `${prefix}/modules/user`),
   '@infra': path.join(files, `${prefix}/shared/infra`),
   '@utils': path.join(files, `${prefix}/shared/utils`),
+  '@price': path.join(files, `${prefix}/modules/price`),
   '@http': path.join(files, `${prefix}/shared/infra/http`),
   '@product': path.join(files, `${prefix}/modules/product`),
   '@database': path.join(files, `${prefix}/shared/infra/database`),

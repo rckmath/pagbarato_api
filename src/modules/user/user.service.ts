@@ -37,7 +37,7 @@ export class UserService implements IUserService {
   async createOne(user: UserCreateDto): Promise<UserDto> {
     user.firebaseId = await this.createUserOnFirebase(user);
     const response = await this._repository.create(user);
-    return this.findOne({ id: response.id as string });
+    return this.findOne({ id: response.id });
   }
 
   async findOne(user: UserFindOneDto): Promise<UserDto> {
@@ -62,15 +62,9 @@ export class UserService implements IUserService {
 
   async delete(item: UserDeleteDto): Promise<void> {
     const idList = item.id as Array<string>;
-
     const userList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
-
-    if (userList.length) {
-      const firebasePromises = userList.map(async (user) => {
-        if (user) return FirebaseClient.auth().deleteUser(user.firebaseId);
-      });
-
-      await Promise.all([...firebasePromises, this._repository.delete(idList)]);
-    }
+    if (!userList.length) return;
+    const firebasePromises = userList.map(async (user) => user && FirebaseClient.auth().deleteUser(user.firebaseId));
+    await Promise.all([...firebasePromises, this._repository.delete(idList)]);
   }
 }

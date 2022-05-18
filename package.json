@@ -9,11 +9,12 @@
     "prepare": "husky install",
     "lint": "eslint . --ext .ts",
     "start": "node dist/index.js",
-    "start:migrate": "npx prisma migrate deploy && npm run start",
+    "start:migrate": "npm run migrate && npm run start",
     "test:watch": "jest --watch --verbose",
+    "migrate": "npx prisma migrate deploy",
     "migrate:dev": "npx prisma migrate dev",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "dev": "npm run migrate:dev && nodemon -L src/index.ts"
+    "dev": "npm run migrate && nodemon -L src/index.ts"
   },
   "repository": {
     "type": "git",

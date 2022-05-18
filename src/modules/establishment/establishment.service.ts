@@ -19,7 +19,7 @@ export class EstablishmentService implements IEstablishmentService {
 
   async createOne(establishment: EstablishmentCreateDto): Promise<EstablishmentDto> {
     const response = await this._repository.create(establishment);
-    return this.findOne({ id: response.id as string });
+    return this.findOne({ id: response.id });
   }
 
   async findOne(establishment: EstablishmentFindOneDto): Promise<EstablishmentDto> {

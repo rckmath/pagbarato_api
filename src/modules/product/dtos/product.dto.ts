@@ -1,3 +1,5 @@
+import { PriceDto } from '@price/dtos';
+
 import { ProductUnitType } from '../product.enum';
 import { IProduct } from '../product.interface';
 
@@ -7,14 +9,18 @@ export default class ProductDto {
     public readonly name: string,
     public readonly unit: ProductUnitType,
     public readonly createdAt: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly prices?: Array<PriceDto>,
+    public readonly lowestPrice?: number
   ) {}
 
   static from(product: IProduct) {
-    return new ProductDto(product.id, product.name, product.unit, product.createdAt, product.updatedAt);
+    const prices = product.prices?.length ? PriceDto.fromMany(product.prices) : undefined;
+    const lowestPrice = prices?.length ? prices[0].value : undefined;
+    return new ProductDto(product.id, product.name, product.unit, product.createdAt, product.updatedAt, prices, lowestPrice);
   }
 
-  static fromMany(products: Array<IProduct>) {
+  static fromMany(products: Array<IProduct>): Array<ProductDto> {
     return products.map((product) => ProductDto.from(product));
   }
 }

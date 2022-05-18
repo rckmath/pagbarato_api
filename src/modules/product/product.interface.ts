@@ -1,3 +1,4 @@
+import { IPrice } from '@price/price.interface';
 import { ProductCreateDto, ProductFindManyDto, ProductFindOneDto, ProductDeleteDto, ProductUpdateDto, ProductDto } from './dtos';
 import { ProductUnitType } from './product.enum';
 
@@ -7,6 +8,7 @@ export interface IProduct {
   unit: ProductUnitType;
   createdAt: Date;
   updatedAt: Date;
+  prices?: Array<IPrice>;
 }
 
 export interface IProductService {

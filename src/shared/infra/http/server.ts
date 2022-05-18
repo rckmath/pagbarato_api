@@ -3,11 +3,10 @@ import * as express from 'express';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
-import { Router } from './api';
-
-import { errorHandlerMiddleware } from './api';
+import { Router, errorHandlerMiddleware } from './api';
 
 import '@user/user.controller';
+import '@price/price.controller';
 import '@product/product.controller';
 import '@establishment/establishment.controller';
 

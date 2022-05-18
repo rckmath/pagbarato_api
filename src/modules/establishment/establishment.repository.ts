@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 
-import { PrismaService } from '@database/prisma';
+import { db as _db } from '@database/index';
 
 import { IEstablishmentRepository, IEstablishment } from './establishment.interface';
 import { Prisma } from '@prisma/client';
@@ -8,10 +8,8 @@ import { EstablishmentCreateDto, EstablishmentFindManyDto, EstablishmentUpdateDt
 
 @injectable()
 export class EstablishmentRepository implements IEstablishmentRepository {
-  constructor(private readonly _prisma: PrismaService) {}
-
   async create(item: EstablishmentCreateDto): Promise<IEstablishment> {
-    const establishment = await this._prisma.establishment.create({
+    const establishment = await _db.establishment.create({
       data: {
         name: item.name,
         latitude: new Prisma.Decimal(item.latitude),
@@ -23,7 +21,7 @@ export class EstablishmentRepository implements IEstablishmentRepository {
   }
 
   async update(id: string, item: EstablishmentUpdateDto): Promise<void> {
-    await this._prisma.establishment.update({
+    await _db.establishment.update({
       where: { id },
       data: {
         name: item.name,
@@ -34,11 +32,11 @@ export class EstablishmentRepository implements IEstablishmentRepository {
   }
 
   async delete(idList: Array<string>): Promise<void> {
-    await this._prisma.establishment.deleteMany({ where: { id: { in: idList } } });
+    await _db.establishment.deleteMany({ where: { id: { in: idList } } });
   }
 
   async find(searchParameters: EstablishmentFindManyDto): Promise<Array<IEstablishment>> {
-    const establishments = await this._prisma.establishment.findMany({
+    const establishments = await _db.establishment.findMany({
       skip: searchParameters.skip,
       take: searchParameters.pageSize,
       orderBy: {
@@ -54,7 +52,7 @@ export class EstablishmentRepository implements IEstablishmentRepository {
   }
 
   async count(searchParameters: EstablishmentFindManyDto): Promise<number> {
-    const establishmentCount = await this._prisma.establishment.count({
+    const establishmentCount = await _db.establishment.count({
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
@@ -68,7 +66,7 @@ export class EstablishmentRepository implements IEstablishmentRepository {
   }
 
   async findOne(id: string): Promise<IEstablishment | null> {
-    const foundEstablishment: IEstablishment | null = await this._prisma.establishment.findUnique({ where: { id } });
+    const foundEstablishment: IEstablishment | null = await _db.establishment.findUnique({ where: { id } });
     if (!foundEstablishment) return null;
     return foundEstablishment as IEstablishment;
   }

@@ -12,7 +12,7 @@ export class PriceService implements IPriceService {
 
   async createOne(price: PriceCreateDto): Promise<PriceDto> {
     const response = await this._repository.create(price);
-    return this.findOne({ id: response.id as string });
+    return this.findOne({ id: response.id });
   }
 
   async findOne(price: PriceFindOneDto): Promise<PriceDto> {

@@ -6,7 +6,7 @@ export default class PriceCreateDto {
     public readonly userId: string,
     public readonly establishmentId: string,
     public readonly value: number,
-    public readonly type: PriceType,
+    public readonly type: PriceType = PriceType.COMMON,
     public readonly productId?: string,
     public readonly productName?: string,
     public readonly isProductWithNearExpirationDate: boolean = false,
@@ -14,7 +14,6 @@ export default class PriceCreateDto {
   ) {}
 
   static from(body: Partial<PriceCreateDto>) {
-    if (!body.type) throw new MissingFieldException('type');
     if (!body.value) throw new MissingFieldException('value');
     if (!body.userId) throw new MissingFieldException('userId');
     if (!body.establishmentId) throw new MissingFieldException('establishmentId');

@@ -12,7 +12,7 @@ export class ProductService implements IProductService {
 
   async createOne(product: ProductCreateDto): Promise<ProductDto> {
     const response = await this._repository.create(product);
-    return this.findOne({ id: response.id as string });
+    return this.findOne({ id: response.id });
   }
 
   async findOne(product: ProductFindOneDto): Promise<ProductDto> {

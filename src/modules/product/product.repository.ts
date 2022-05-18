@@ -1,27 +1,23 @@
 import { injectable } from 'inversify';
 
-import { PrismaService } from '@database/prisma';
+import { db as _db } from '@database/index';
 
 import { IProductRepository, IProduct } from './product.interface';
 import { ProductCreateDto, ProductFindManyDto, ProductUpdateDto } from './dtos';
 
 @injectable()
 export class ProductRepository implements IProductRepository {
-  constructor(private readonly _prisma: PrismaService) {}
-
   async create(item: ProductCreateDto): Promise<IProduct> {
-    const product = await this._prisma.product.create({
+    return _db.product.create({
       data: {
         name: item.name,
         unit: item.unit,
       },
     });
-
-    return product;
   }
 
   async update(id: string, item: ProductUpdateDto): Promise<void> {
-    await this._prisma.product.update({
+    await _db.product.update({
       where: { id },
       data: {
         name: item.name,
@@ -31,11 +27,11 @@ export class ProductRepository implements IProductRepository {
   }
 
   async delete(idList: Array<string>): Promise<void> {
-    await this._prisma.product.deleteMany({ where: { id: { in: idList } } });
+    await _db.product.deleteMany({ where: { id: { in: idList } } });
   }
 
   async find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>> {
-    const products = await this._prisma.product.findMany({
+    return _db.product.findMany({
       skip: searchParameters.skip,
       take: searchParameters.pageSize,
       orderBy: {
@@ -46,12 +42,10 @@ export class ProductRepository implements IProductRepository {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
-
-    return products;
   }
 
   async count(searchParameters: ProductFindManyDto): Promise<number> {
-    const productCount = await this._prisma.product.count({
+    return _db.product.count({
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
@@ -60,13 +54,21 @@ export class ProductRepository implements IProductRepository {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
-
-    return productCount;
   }
 
   async findOne(id: string): Promise<IProduct | null> {
-    const foundProduct: IProduct | null = await this._prisma.product.findUnique({ where: { id } });
-    if (!foundProduct) return null;
-    return foundProduct as IProduct;
+    return _db.product.findUnique({
+      where: { id },
+      include: {
+        prices: {
+          orderBy: {
+            value: 'asc',
+          },
+          include: {
+            establishment: true,
+          },
+        },
+      },
+    });
   }
 }

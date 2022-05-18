@@ -1,17 +1,15 @@
 import { injectable } from 'inversify';
 
-import { PrismaService } from '@database/prisma';
+import { db as _db } from '@database/index';
+import { Prisma } from '@prisma/client';
 
 import { IPriceRepository, IPrice } from './price.interface';
 import { PriceCreateDto, PriceFindManyDto, PriceUpdateDto } from './dtos';
-import { Prisma } from '@prisma/client';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
-  constructor(private readonly _prisma: PrismaService) {}
-
   async create(item: PriceCreateDto): Promise<IPrice> {
-    const price = await this._prisma.price.create({
+    return _db.price.create({
       data: {
         userId: item.userId,
         productId: item.productId,
@@ -22,12 +20,10 @@ export class PriceRepository implements IPriceRepository {
         isProductWithNearExpirationDate: item.isProductWithNearExpirationDate,
       },
     });
-
-    return price;
   }
 
   async update(id: string, item: PriceUpdateDto): Promise<void> {
-    await this._prisma.price.update({
+    await _db.price.update({
       where: { id },
       data: {
         userId: item.userId,
@@ -42,11 +38,11 @@ export class PriceRepository implements IPriceRepository {
   }
 
   async delete(idList: Array<string>): Promise<void> {
-    await this._prisma.price.deleteMany({ where: { id: { in: idList } } });
+    await _db.price.deleteMany({ where: { id: { in: idList } } });
   }
 
   async find(searchParameters: PriceFindManyDto): Promise<Array<IPrice>> {
-    const prices = await this._prisma.price.findMany({
+    return _db.price.findMany({
       skip: searchParameters.skip,
       take: searchParameters.pageSize,
       orderBy: {
@@ -56,12 +52,10 @@ export class PriceRepository implements IPriceRepository {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
-
-    return prices;
   }
 
   async count(searchParameters: PriceFindManyDto): Promise<number> {
-    const priceCount = await this._prisma.price.count({
+    return _db.price.count({
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
@@ -69,13 +63,16 @@ export class PriceRepository implements IPriceRepository {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
-
-    return priceCount;
   }
 
   async findOne(id: string): Promise<IPrice | null> {
-    const foundPrice: IPrice | null = await this._prisma.price.findUnique({ where: { id } });
-    if (!foundPrice) return null;
-    return foundPrice as IPrice;
+    return _db.price.findUnique({
+      where: { id },
+      include: {
+        establishment: true,
+        product: true,
+        user: true,
+      },
+    });
   }
 }

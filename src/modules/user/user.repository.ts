@@ -1,17 +1,15 @@
 import { injectable } from 'inversify';
 
-import { PrismaService } from '@database/prisma';
+import { db as _db } from '@database/index';
+import { Prisma } from '@prisma/client';
 
 import { IUserRepository, IUser } from './user.interface';
-import { Prisma } from '@prisma/client';
 import { UserCreateDto, UserFindManyDto, UserUpdateDto } from './dtos';
 
 @injectable()
 export class UserRepository implements IUserRepository {
-  constructor(private readonly _prisma: PrismaService) {}
-
-  async create(item: UserCreateDto): Promise<Partial<IUser>> {
-    const user = await this._prisma.user.create({
+  async create(item: UserCreateDto): Promise<IUser> {
+    return _db.user.create({
       data: {
         name: item.name,
         email: item.email,
@@ -21,12 +19,10 @@ export class UserRepository implements IUserRepository {
         preferredSearchRangeInKm: new Prisma.Decimal(item.preferredSearchRangeInKm),
       },
     });
-
-    return user as Partial<IUser>;
   }
 
   async update(id: string, item: UserUpdateDto): Promise<void> {
-    await this._prisma.user.update({
+    await _db.user.update({
       where: { id },
       data: {
         name: item.name,
@@ -39,13 +35,11 @@ export class UserRepository implements IUserRepository {
   }
 
   async delete(idList: Array<string>): Promise<void> {
-    await this._prisma.user.deleteMany({ where: { id: { in: idList } } });
+    await _db.user.deleteMany({ where: { id: { in: idList } } });
   }
 
   async find(searchParameters: UserFindManyDto): Promise<Array<IUser>> {
-    console.log(searchParameters);
-
-    const users = await this._prisma.user.findMany({
+    return _db.user.findMany({
       skip: searchParameters.skip,
       take: searchParameters.pageSize,
       orderBy: {
@@ -58,12 +52,10 @@ export class UserRepository implements IUserRepository {
         role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
       },
     });
-
-    return users;
   }
 
   async count(searchParameters: UserFindManyDto): Promise<number> {
-    const userCount = await this._prisma.user.count({
+    return _db.user.count({
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },
@@ -74,12 +66,9 @@ export class UserRepository implements IUserRepository {
         role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
       },
     });
-
-    return userCount;
   }
 
   async findOne(id: string): Promise<IUser | null> {
-    const foundUser: IUser | null = await this._prisma.user.findUnique({ where: { id } });
-    return foundUser as IUser;
+    return _db.user.findUnique({ where: { id } });
   }
 }

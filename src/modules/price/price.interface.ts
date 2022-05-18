@@ -1,3 +1,6 @@
+import { IEstablishment } from '@establishment/establishment.interface';
+import { IProduct } from '@product/product.interface';
+import { IUser } from '@user/user.interface';
 import { Prisma } from '@prisma/client';
 import { PriceCreateDto, PriceFindManyDto, PriceFindOneDto, PriceDeleteDto, PriceUpdateDto, PriceDto } from './dtos';
 import { PriceType } from './price.enum';
@@ -13,6 +16,9 @@ export interface IPrice {
   expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  user?: IUser | null;
+  product?: IProduct | null;
+  establishment?: IEstablishment | null;
 }
 
 export interface IPriceService {

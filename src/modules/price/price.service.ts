@@ -16,7 +16,7 @@ export class PriceService implements IPriceService {
   }
 
   async findOne(price: PriceFindOneDto): Promise<PriceDto> {
-    const foundPrice = await this._repository.findOne(price.id);
+    const foundPrice = await this._repository.findOne(price.id as string);
     if (!foundPrice) throw new NotFoundException('Price');
     return PriceDto.from(foundPrice);
   }

@@ -4,7 +4,7 @@ import { db as _db } from '@database/index';
 import { Prisma } from '@prisma/client';
 
 import { IUserRepository, IUser } from './user.interface';
-import { UserCreateDto, UserFindManyDto, UserUpdateDto } from './dtos';
+import { UserCreateDto, UserFindManyDto, UserFindOneDto, UserUpdateDto } from './dtos';
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -68,7 +68,13 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async findOne(id: string): Promise<IUser | null> {
-    return _db.user.findUnique({ where: { id } });
+  async findOne(item: UserFindOneDto): Promise<IUser | null> {
+    return _db.user.findUnique({
+      where: {
+        id: item.id,
+        email: item.email,
+        firebaseId: item.firebaseId,
+      },
+    });
   }
 }

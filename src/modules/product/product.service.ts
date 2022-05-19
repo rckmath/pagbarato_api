@@ -16,7 +16,7 @@ export class ProductService implements IProductService {
   }
 
   async findOne(product: ProductFindOneDto): Promise<ProductDto> {
-    const foundProduct = await this._repository.findOne(product.id);
+    const foundProduct = await this._repository.findOne(product.id as string);
     if (!foundProduct) throw new NotFoundException('Product');
     return ProductDto.from(foundProduct);
   }

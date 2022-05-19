@@ -18,8 +18,9 @@ import { IProductService } from './product.interface';
 import { ProductCreateDto, ProductFindOneDto, ProductDeleteDto, ProductFindManyDto, ProductDto, ProductUpdateDto } from './dtos';
 
 import { BaseHttpResponse } from '@http/api';
-import { ValidateRequestMiddleware } from '@http/api';
+import { Validate } from '@http/api';
 import { BasePaginationDto } from '@shared/infra/http/dto';
+import AuthMiddleware from '@user/user.middleware';
 
 @controller('/product')
 export class ProductController extends BaseHttpController implements Controller {
@@ -27,14 +28,14 @@ export class ProductController extends BaseHttpController implements Controller 
     super();
   }
 
-  @httpPost('/', ValidateRequestMiddleware.with(ProductCreateDto))
+  @httpPost('/', AuthMiddleware.validateToken(), Validate.with(ProductCreateDto))
   public async create(@request() req: express.Request, @response() res: express.Response) {
     const createdProduct = await this._productService.createOne(req.body);
     const response = BaseHttpResponse.success(createdProduct);
     return res.json(response);
   }
 
-  @httpGet('/', ValidateRequestMiddleware.withQuery(ProductFindManyDto))
+  @httpGet('/', AuthMiddleware.validateToken(), Validate.withQuery(ProductFindManyDto))
   public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
     let response;
 
@@ -49,21 +50,21 @@ export class ProductController extends BaseHttpController implements Controller 
     return res.json(response);
   }
 
-  @httpGet('/:id', ValidateRequestMiddleware.withParams(ProductFindOneDto))
+  @httpGet('/:id', AuthMiddleware.validateToken(), Validate.withParams(ProductFindOneDto))
   public async getById(@request() req: express.Request, @response() res: express.Response) {
     const product = await this._productService.findOne(req.body);
     const response = BaseHttpResponse.success(product);
     return res.json(response);
   }
 
-  @httpPut('/:id', ValidateRequestMiddleware.withParams(ProductUpdateDto))
+  @httpPut('/:id', AuthMiddleware.validateToken(), Validate.withParams(ProductUpdateDto))
   public async updateById(@request() req: express.Request, @response() res: express.Response) {
     const product = await this._productService.updateOne(req.body);
     const response = BaseHttpResponse.success(product);
     return res.json(response);
   }
 
-  @httpDelete('/:id', ValidateRequestMiddleware.withParams(ProductDeleteDto))
+  @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withParams(ProductDeleteDto))
   public async deleteById(@request() req: express.Request, @response() res: express.Response) {
     const product = await this._productService.delete(req.body);
     const response = BaseHttpResponse.success(product);

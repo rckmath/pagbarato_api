@@ -2,6 +2,13 @@ import { Prisma } from '@prisma/client';
 import { UserCreateDto, UserFindManyDto, UserFindOneDto, UserDeleteDto, UserUpdateDto, UserDto } from './dtos';
 import { UserRoleType } from './user.enum';
 
+export interface IAuth {
+  userId: string;
+  firebaseId: string;
+  firebaseToken: string;
+  role: UserRoleType;
+}
+
 export interface IUser {
   id: string;
   firebaseId: string;
@@ -26,7 +33,7 @@ export interface IUserService {
 export interface IUserRepository {
   create(item: UserCreateDto): Promise<IUser>;
   find(searchParameters: UserFindManyDto): Promise<Array<IUser>>;
-  findOne(id: IUser['id']): Promise<IUser | null>;
+  findOne(item: UserFindOneDto): Promise<IUser | null>;
   update(id: string, item: UserUpdateDto): Promise<void>;
   delete(idList: Array<string>): Promise<void>;
   count(searchParameters: UserFindManyDto): Promise<number>;

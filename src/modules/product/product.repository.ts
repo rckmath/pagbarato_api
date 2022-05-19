@@ -31,9 +31,10 @@ export class ProductRepository implements IProductRepository {
   }
 
   async find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>> {
+    console.log(searchParameters);
     return _db.product.findMany({
-      skip: searchParameters.skip,
-      take: searchParameters.pageSize,
+      skip: searchParameters.paginate ? searchParameters.skip : undefined,
+      take: searchParameters.paginate ? searchParameters.pageSize : undefined,
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },

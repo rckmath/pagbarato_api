@@ -21,7 +21,6 @@ export default class UserDto {
     if (!user.email) throw new MissingFieldException('email');
     if (!user.createdAt) throw new MissingFieldException('createdAt');
     if (!user.preferredSearchRangeInKm) throw new MissingFieldException('preferredSearchRangeInKm');
-
     return new UserDto(
       user.id,
       user.name,

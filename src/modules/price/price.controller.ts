@@ -37,8 +37,11 @@ export class PriceController extends BaseHttpController implements Controller {
   @httpGet('/', AuthMiddleware.validateToken(), Validate.withQuery(PriceFindManyDto))
   public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
     let response;
-    const [prices, priceCount] = await Promise.all([this._priceService.findMany(req.body), this._priceService.count(req.body)]);
-    response = new BasePaginationDto<PriceDto>(priceCount, parseInt(req.body.page), prices);
+    const [prices, priceCount] = await Promise.all([
+      this._priceService.findMany(req.body),
+      req.body.paginate ? this._priceService.count(req.body) : undefined,
+    ]);
+    response = req.body.paginate ? new BasePaginationDto<PriceDto>(priceCount, parseInt(req.body.page), prices) : prices;
     response = BaseHttpResponse.success(response);
     return res.json(response);
   }

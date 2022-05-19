@@ -43,8 +43,8 @@ export class PriceRepository implements IPriceRepository {
 
   async find(searchParameters: PriceFindManyDto): Promise<Array<IPrice>> {
     return _db.price.findMany({
-      skip: searchParameters.skip,
-      take: searchParameters.pageSize,
+      skip: searchParameters.paginate ? searchParameters.skip : undefined,
+      take: searchParameters.paginate ? searchParameters.pageSize : undefined,
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },

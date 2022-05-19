@@ -24,8 +24,7 @@ import {
   EstablishmentUpdateDto,
 } from './dtos';
 
-import { BaseHttpResponse } from '@http/api';
-import { Validate } from '@http/api';
+import { BaseHttpResponse, Validate } from '@http/api';
 import { BasePaginationDto } from '@shared/infra/http/dto';
 import AuthMiddleware from '@user/user.middleware';
 
@@ -47,9 +46,11 @@ export class EstablishmentController extends BaseHttpController implements Contr
     let response;
     const [establishments, establishmentCount] = await Promise.all([
       this._establishmentService.findMany(req.body),
-      this._establishmentService.count(req.body),
+      req.body.paginate ? this._establishmentService.count(req.body) : undefined,
     ]);
-    response = new BasePaginationDto<EstablishmentDto>(establishmentCount, parseInt(req.body.page), establishments);
+    response = req.body.paginate
+      ? new BasePaginationDto<EstablishmentDto>(establishmentCount, parseInt(req.body.page), establishments)
+      : establishments;
     response = BaseHttpResponse.success(response);
 
     return res.json(response);

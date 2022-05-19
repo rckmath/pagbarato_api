@@ -44,13 +44,13 @@ export class EstablishmentController extends BaseHttpController implements Contr
   @httpGet('/', ValidateRequestMiddleware.withQuery(EstablishmentFindManyDto))
   public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
     let response;
-
     const [establishments, establishmentCount] = await Promise.all([
       this._establishmentService.findMany(req.body),
-      this._establishmentService.count(req.body),
+      req.body.paginate ? this._establishmentService.count(req.body) : undefined,
     ]);
-
-    response = new BasePaginationDto<EstablishmentDto>(establishmentCount, parseInt(req.body.page), establishments);
+    response = req.body.paginate
+      ? new BasePaginationDto<EstablishmentDto>(establishmentCount, parseInt(req.body.page), establishments)
+      : establishments;
     response = BaseHttpResponse.success(response);
 
     return res.json(response);

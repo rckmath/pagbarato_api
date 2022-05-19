@@ -37,15 +37,12 @@ export class ProductController extends BaseHttpController implements Controller 
   @httpGet('/', ValidateRequestMiddleware.withQuery(ProductFindManyDto))
   public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
     let response;
-
     const [products, productCount] = await Promise.all([
       this._productService.findMany(req.body),
-      this._productService.count(req.body),
+      req.body.paginate ? this._productService.count(req.body) : undefined,
     ]);
-
-    response = new BasePaginationDto<ProductDto>(productCount, parseInt(req.body.page), products);
+    response = req.body.paginate ? new BasePaginationDto<ProductDto>(productCount, parseInt(req.body.page), products) : products;
     response = BaseHttpResponse.success(response);
-
     return res.json(response);
   }
 

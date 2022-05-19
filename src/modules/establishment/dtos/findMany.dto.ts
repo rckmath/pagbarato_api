@@ -8,23 +8,30 @@ export default class EstablishmentFindManyDto extends BaseFindManyDto {
     pageSize?: number,
     orderBy?: string,
     orderDescending?: boolean,
+    public paginate: boolean = true,
     public readonly name?: string,
-    public readonly id?: string | Array<string>
+    public id?: string | Array<string>
   ) {
     super(page, pageSize, orderBy, orderDescending);
   }
 
   static from(body: Partial<EstablishmentFindManyDto>) {
-    const id = arraySplitter<string>(body.id);
-
-    id.forEach((x) => {
-      if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
-    });
-
+    body.id = arraySplitter<string>(body.id);
     body.page = stringToNumberConversor(body.page, false, 1, 'page');
     body.pageSize = stringToNumberConversor(body.pageSize, false, 1, 'pageSize');
     body.orderDescending = body.orderDescending && typeof body.orderDescending == 'string' && JSON.parse(body.orderDescending);
-
-    return new EstablishmentFindManyDto(body.page, body.pageSize, body.orderBy, body.orderDescending, body.name, id);
+    body.paginate = body.paginate && typeof body.paginate == 'string' && JSON.parse(body.paginate);
+    body.id.forEach((x) => {
+      if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
+    });
+    return new EstablishmentFindManyDto(
+      body.page,
+      body.pageSize,
+      body.orderBy,
+      body.orderDescending,
+      body.paginate,
+      body.name,
+      body.id
+    );
   }
 }

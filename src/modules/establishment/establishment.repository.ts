@@ -37,8 +37,8 @@ export class EstablishmentRepository implements IEstablishmentRepository {
 
   async find(searchParameters: EstablishmentFindManyDto): Promise<Array<IEstablishment>> {
     const establishments = await _db.establishment.findMany({
-      skip: searchParameters.skip,
-      take: searchParameters.pageSize,
+      skip: searchParameters.paginate ? searchParameters.skip : undefined,
+      take: searchParameters.paginate ? searchParameters.pageSize : undefined,
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },

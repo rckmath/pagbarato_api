@@ -23,7 +23,7 @@ export class EstablishmentService implements IEstablishmentService {
   }
 
   async findOne(establishment: EstablishmentFindOneDto): Promise<EstablishmentDto> {
-    const foundEstablishment = await this._repository.findOne(establishment.id);
+    const foundEstablishment = await this._repository.findOne(establishment.id as string);
     if (!foundEstablishment) throw new NotFoundException('Establishment');
     return EstablishmentDto.from(foundEstablishment);
   }

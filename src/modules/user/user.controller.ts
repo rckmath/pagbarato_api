@@ -43,7 +43,7 @@ export class UserController extends BaseHttpController implements Controller {
     return res.json(response);
   }
 
-  @httpGet('/:id', ValidateRequestMiddleware.withParams(UserFindOneDto))
+  @httpGet('/:id', ValidateRequestMiddleware.withAll(UserFindOneDto))
   public async getById(@request() req: express.Request, @response() res: express.Response) {
     const user = await this._userService.findOne(req.body);
     const response = BaseHttpResponse.success(user);

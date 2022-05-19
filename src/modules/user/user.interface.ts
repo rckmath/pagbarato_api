@@ -26,7 +26,7 @@ export interface IUserService {
 export interface IUserRepository {
   create(item: UserCreateDto): Promise<IUser>;
   find(searchParameters: UserFindManyDto): Promise<Array<IUser>>;
-  findOne(id: IUser['id']): Promise<IUser | null>;
+  findOne(item: UserFindOneDto): Promise<IUser | null>;
   update(id: string, item: UserUpdateDto): Promise<void>;
   delete(idList: Array<string>): Promise<void>;
   count(searchParameters: UserFindManyDto): Promise<number>;

@@ -41,7 +41,7 @@ export class UserService implements IUserService {
   }
 
   async findOne(user: UserFindOneDto): Promise<UserDto> {
-    const foundUser = await this._repository.findOne(user.id);
+    const foundUser = await this._repository.findOne(user);
     if (!foundUser) throw new NotFoundException('User');
     return UserDto.from(foundUser);
   }
@@ -62,7 +62,7 @@ export class UserService implements IUserService {
 
   async delete(item: UserDeleteDto): Promise<void> {
     const idList = item.id as Array<string>;
-    const userList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
+    const userList = await Promise.all(idList.map(async (id) => this._repository.findOne({ id })));
     if (!userList.length) return;
     const firebasePromises = userList.map(async (user) => user && FirebaseClient.auth().deleteUser(user.firebaseId));
     await Promise.all([...firebasePromises, this._repository.delete(idList)]);

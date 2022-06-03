@@ -7,7 +7,7 @@ export default class PriceCreateDto {
     public readonly establishmentId: string,
     public readonly value: number,
     public readonly type: PriceType = PriceType.COMMON,
-    public readonly productId?: string,
+    public productId?: string,
     public readonly productName?: string,
     public readonly isProductWithNearExpirationDate: boolean = false,
     public readonly expiresAt?: Date
@@ -17,7 +17,7 @@ export default class PriceCreateDto {
     if (!body.value) throw new MissingFieldException('value');
     if (!body.userId) throw new MissingFieldException('userId');
     if (!body.establishmentId) throw new MissingFieldException('establishmentId');
-    if (!body.productId && body.productName) throw new MissingFieldException('productId or productName');
+    if (!body.productId && !body.productName) throw new MissingFieldException('productId or productName');
 
     return new PriceCreateDto(
       body.userId,

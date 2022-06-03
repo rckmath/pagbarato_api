@@ -11,12 +11,12 @@ export default class ProductDto {
     public readonly createdAt: Date,
     public readonly updatedAt?: Date,
     public readonly prices?: Array<PriceDto>,
-    public readonly lowestPrice?: number
+    public readonly lowestPrice?: number | null
   ) {}
 
   static from(product: IProduct) {
-    const prices = product.prices?.length ? PriceDto.fromMany(product.prices) : undefined;
-    const lowestPrice = prices?.length ? prices[0].value : undefined;
+    const prices = product.prices?.length ? PriceDto.fromMany(product.prices) : [];
+    const lowestPrice = prices?.length ? prices[0].value : null;
     return new ProductDto(product.id, product.name, product.unit, product.createdAt, product.updatedAt, prices, lowestPrice);
   }
 

@@ -31,6 +31,17 @@ const getWhereQuery = (searchParameters: ProductFindManyDto) => {
 
 @injectable()
 export class ProductRepository implements IProductRepository {
+  async findOrCreate(item: ProductCreateDto): Promise<IProduct> {
+    return _db.product.upsert({
+      where: { name: item.name },
+      update: {},
+      create: {
+        name: item.name,
+        unit: item.unit,
+      },
+    });
+  }
+
   async create(item: ProductCreateDto): Promise<IProduct> {
     return _db.product.create({
       data: {

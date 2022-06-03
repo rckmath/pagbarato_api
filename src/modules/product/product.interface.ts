@@ -21,6 +21,7 @@ export interface IProductService {
 }
 
 export interface IProductRepository {
+  findOrCreate(item: ProductCreateDto): Promise<IProduct>;
   create(item: ProductCreateDto): Promise<IProduct>;
   find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>>;
   findOne(id: IProduct['id']): Promise<IProduct | null>;

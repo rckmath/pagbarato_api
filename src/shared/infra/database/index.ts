@@ -5,6 +5,6 @@ declare global {
   var db: PrismaService | undefined;
 }
 
-export const db = global.db || new PrismaService();
+export const db = global.db || new PrismaService({ log: ['query'] });
 
 if (process.env.NODE_ENV !== 'production') global.db = db;

@@ -4,6 +4,30 @@ import { db as _db } from '@database/index';
 
 import { IProductRepository, IProduct } from './product.interface';
 import { ProductCreateDto, ProductFindManyDto, ProductUpdateDto } from './dtos';
+import { Prisma, Product } from '@prisma/client';
+
+const getWhereQuery = (searchParameters: ProductFindManyDto) => {
+  let whereCount = 0;
+  let nameWhere = Prisma.empty;
+  let idWhere = Prisma.empty;
+  let where = Prisma.empty;
+
+  if (searchParameters.name) {
+    nameWhere = Prisma.sql`WHERE to_tsvector(concat_ws(' ', "public"."Product"."name")) @@ to_tsquery(${searchParameters.name}) `;
+    whereCount++;
+  }
+
+  if (searchParameters.id && searchParameters.id.length) {
+    const idList = searchParameters.id as string[];
+    const preQuery = Prisma.sql`"public"."Product"."id" IN (${Prisma.join(idList.map((x) => x))}) `;
+    idWhere = Prisma.sql`${whereCount ? Prisma.sql`AND ${preQuery}` : Prisma.sql`WHERE ${preQuery}`} `;
+    whereCount++;
+  }
+
+  where = Prisma.sql`${nameWhere}${idWhere}`;
+
+  return where;
+};
 
 @injectable()
 export class ProductRepository implements IProductRepository {
@@ -31,25 +55,20 @@ export class ProductRepository implements IProductRepository {
   }
 
   async find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>> {
-    console.log(searchParameters);
-    return _db.product.findMany({
-      skip: searchParameters.paginate ? searchParameters.skip : undefined,
-      take: searchParameters.paginate ? searchParameters.pageSize : undefined,
-      orderBy: {
-        [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
-      },
-      where: {
-        name: { contains: searchParameters.name },
-        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
-      },
-    });
+    const where = getWhereQuery(searchParameters);
+    const order = Prisma.sql`ORDER BY "public"."Product"."updatedAt"`;
+
+    return _db.$queryRaw<Product[]>(
+      Prisma.sql`SELECT * from "Product"
+      ${where}
+      ${order}
+      ${searchParameters.orderDescending ? Prisma.sql`DESC` : Prisma.sql`ASC`}
+      ${searchParameters.paginate ? Prisma.sql`LIMIT ${searchParameters.pageSize} OFFSET ${searchParameters.skip}` : Prisma.empty}`
+    );
   }
 
   async count(searchParameters: ProductFindManyDto): Promise<number> {
     return _db.product.count({
-      orderBy: {
-        [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
-      },
       where: {
         name: { contains: searchParameters.name },
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },

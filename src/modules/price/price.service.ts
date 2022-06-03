@@ -6,11 +6,20 @@ import { PriceCreateDto, PriceDeleteDto, PriceDto, PriceFindManyDto, PriceFindOn
 import { TYPES } from '@shared/ioc/types.ioc';
 import { NotFoundException } from '@shared/errors';
 
+import { IProductRepository } from '@product/product.interface';
+import { ProductUnitType } from '@product/product.enum';
+
 @injectable()
 export class PriceService implements IPriceService {
-  constructor(@inject(TYPES.IPriceRepository) private readonly _repository: IPriceRepository) {}
+  constructor(
+    @inject(TYPES.IPriceRepository) private readonly _repository: IPriceRepository,
+    @inject(TYPES.IProductRepository) private readonly _productRepository: IProductRepository
+  ) {}
 
   async createOne(price: PriceCreateDto): Promise<PriceDto> {
+    price.productId = price.productName
+      ? (await this._productRepository.findOrCreate({ name: price.productName, unit: ProductUnitType.EA })).id
+      : price.productId;
     const response = await this._repository.create(price);
     return this.findOne({ id: response.id });
   }

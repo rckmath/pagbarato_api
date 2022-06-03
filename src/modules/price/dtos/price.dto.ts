@@ -17,15 +17,15 @@ export default class PriceDto {
     public readonly createdAt: Date,
     public readonly expiresAt: Date | null,
     public readonly updatedAt?: Date,
-    public readonly user?: UserDto,
-    public readonly product?: ProductDto,
-    public readonly establishment?: EstablishmentDto
+    public readonly user?: UserDto | null,
+    public readonly product?: ProductDto | null,
+    public readonly establishment?: EstablishmentDto | null
   ) {}
 
   static from(price: IPrice) {
-    const user = price.user ? UserDto.from(price.user) : undefined;
-    const product = price.product ? ProductDto.from(price.product) : undefined;
-    const establishment = price.establishment ? EstablishmentDto.from(price.establishment) : undefined;
+    const user = price.user ? UserDto.from(price.user) : null;
+    const product = price.product ? ProductDto.from(price.product) : null;
+    const establishment = price.establishment ? EstablishmentDto.from(price.establishment) : null;
 
     return new PriceDto(
       price.id,

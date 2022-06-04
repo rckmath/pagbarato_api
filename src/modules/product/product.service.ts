@@ -3,12 +3,17 @@ import { inject, injectable } from 'inversify';
 import { IProductRepository, IProductService } from './product.interface';
 import { ProductCreateDto, ProductDeleteDto, ProductDto, ProductFindManyDto, ProductFindOneDto, ProductUpdateDto } from './dtos';
 
+import { IUserRepository } from '@user/user.interface';
+
 import { TYPES } from '@shared/ioc/types.ioc';
 import { NotFoundException } from '@shared/errors';
 
 @injectable()
 export class ProductService implements IProductService {
-  constructor(@inject(TYPES.IProductRepository) private readonly _repository: IProductRepository) {}
+  constructor(
+    @inject(TYPES.IProductRepository) private readonly _repository: IProductRepository,
+    @inject(TYPES.IUserRepository) private readonly _userRepository: IUserRepository
+    ) {}
 
   async createOne(product: ProductCreateDto): Promise<ProductDto> {
     const response = await this._repository.create(product);

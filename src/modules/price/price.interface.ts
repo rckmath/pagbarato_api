@@ -2,7 +2,15 @@ import { IEstablishment } from '@establishment/establishment.interface';
 import { IProduct } from '@product/product.interface';
 import { IUser } from '@user/user.interface';
 import { Prisma } from '@prisma/client';
-import { PriceCreateDto, PriceFindManyDto, PriceFindOneDto, PriceDeleteDto, PriceUpdateDto, PriceDto } from './dtos';
+import {
+  PriceCreateDto,
+  PriceFindManyDto,
+  PriceFindOneDto,
+  PriceDeleteDto,
+  PriceUpdateDto,
+  PriceDto,
+  PriceFindManyByRangeDto,
+} from './dtos';
 import { PriceType } from './price.enum';
 
 export interface IPrice {
@@ -34,6 +42,7 @@ export interface IPriceRepository {
   create(item: PriceCreateDto): Promise<IPrice>;
   find(searchParameters: PriceFindManyDto): Promise<Array<IPrice>>;
   findOne(id: IPrice['id']): Promise<IPrice | null>;
+  findByRange(searchParameters: PriceFindManyByRangeDto): Promise<Array<IPrice>>;
   update(id: string, item: PriceUpdateDto): Promise<void>;
   delete(idList: Array<string>): Promise<void>;
   count(searchParameters: PriceFindManyDto): Promise<number>;

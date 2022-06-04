@@ -1,10 +1,19 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
+
+import { Prisma, Product } from '@prisma/client';
 
 import { db as _db } from '@database/index';
+import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IProductRepository, IProduct } from './product.interface';
+import { PRODUCT_DEFAULT_SEARCH_RANGE_IN_KM } from './product.enum';
 import { ProductCreateDto, ProductFindManyDto, ProductUpdateDto } from './dtos';
-import { Prisma, Product } from '@prisma/client';
+
+import { IPriceRepository } from '@price/price.interface';
+import { PriceFindManyByRangeDto } from '@price/dtos';
+
+import { IEstablishmentRepository } from '@establishment/establishment.interface';
+import { EstablishmentFindManyDto } from '@establishment/dtos';
 
 const getWhereQuery = (searchParameters: ProductFindManyDto) => {
   let whereCount = 0;
@@ -13,13 +22,13 @@ const getWhereQuery = (searchParameters: ProductFindManyDto) => {
   let where = Prisma.empty;
 
   if (searchParameters.name) {
-    nameWhere = Prisma.sql`WHERE to_tsvector(concat_ws(' ', "public"."Product"."name")) @@ to_tsquery(${searchParameters.name}) `;
+    nameWhere = Prisma.sql`WHERE to_tsvector(concat_ws(' ', "Product"."name")) @@ to_tsquery(${searchParameters.name}) `;
     whereCount++;
   }
 
   if (searchParameters.id && searchParameters.id.length) {
     const idList = searchParameters.id as string[];
-    const preQuery = Prisma.sql`"public"."Product"."id" IN (${Prisma.join(idList.map((x) => x))}) `;
+    const preQuery = Prisma.sql`"Product"."id" IN (${Prisma.join(idList.map((x) => x))}) `;
     idWhere = Prisma.sql`${whereCount ? Prisma.sql`AND ${preQuery}` : Prisma.sql`WHERE ${preQuery}`} `;
     whereCount++;
   }
@@ -31,6 +40,11 @@ const getWhereQuery = (searchParameters: ProductFindManyDto) => {
 
 @injectable()
 export class ProductRepository implements IProductRepository {
+  constructor(
+    @inject(TYPES.IPriceRepository) private readonly _priceRepository: IPriceRepository,
+    @inject(TYPES.IEstablishmentRepository) private readonly _establishmentRepository: IEstablishmentRepository
+  ) {}
+
   async findOrCreate(item: ProductCreateDto): Promise<IProduct> {
     const foundProducts = await _db.product.findMany({
       where: {
@@ -67,12 +81,12 @@ export class ProductRepository implements IProductRepository {
   }
 
   async find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>> {
-    let response: Array<IProduct> = [];
+    let products: Array<IProduct> = [];
 
     const where = getWhereQuery(searchParameters);
-    const order = Prisma.sql`ORDER BY "public"."Product"."name"`;
+    const order = Prisma.sql`ORDER BY "Product"."name"`;
 
-    const products = await _db.$queryRaw<Product[]>(
+    products = await _db.$queryRaw<Product[]>(
       Prisma.sql`SELECT * from "Product"
       ${where}
       ${order}
@@ -80,32 +94,40 @@ export class ProductRepository implements IProductRepository {
       ${searchParameters.paginate ? Prisma.sql`LIMIT ${searchParameters.pageSize} OFFSET ${searchParameters.skip}` : Prisma.empty}`
     );
 
-    const productsLowestPrice = await _db.price.findMany({
-      distinct: ['productId'],
-      select: {
-        productId: true,
-        id: true,
-        value: true,
-        establishment: {
-          select: { name: true },
-        },
-      },
-      where: { productId: { in: products.map((x) => x.id) } },
-      orderBy: { value: 'asc' },
-      take: products.length,
-    });
+    if (!searchParameters.priceFiltering) return products;
 
-    response = products.map((x) => {
+    const productsLowestPrice = await this._priceRepository.findByRange(
+      PriceFindManyByRangeDto.from({
+        lowestOnly: true,
+        productIdList: products.map((x) => x.id),
+        latitude: searchParameters.usersLatitude as number,
+        longitude: searchParameters.usersLongitude as number,
+        radius: searchParameters.rangeRadius ?? PRODUCT_DEFAULT_SEARCH_RANGE_IN_KM,
+      })
+    );
+
+    const productsEstablishmentsLowestPrice = await this._establishmentRepository.find(
+      EstablishmentFindManyDto.from({
+        paginate: false,
+        id: productsLowestPrice.map((price) => price.establishmentId as string).join(','),
+      })
+    );
+
+    productsLowestPrice.forEach(
+      (price) => (price.establishment = productsEstablishmentsLowestPrice.find(({ id }) => id === price.establishmentId))
+    );
+
+    products = products.map((x) => {
       const price = productsLowestPrice.find(({ productId }) => productId === x.id);
-
+      if (!price) return x;
       return {
         ...x,
-        lowestPrice: price?.value?.toNumber(),
+        lowestPrice: price?.value ? parseFloat(new Prisma.Decimal(price.value).toNumber().toFixed(2)) : undefined,
         lowestPriceEstablishment: price?.establishment?.name,
       };
-    });
+    }).filter(x => x.lowestPrice);
 
-    return response;
+    return products;
   }
 
   async count(searchParameters: ProductFindManyDto): Promise<number> {
@@ -118,7 +140,9 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findOne(id: string): Promise<IProduct | null> {
-    return _db.product.findUnique({
+    let product: IProduct | null = null;
+    
+    product = await _db.product.findUnique({
       where: { id },
       include: {
         prices: {
@@ -127,5 +151,32 @@ export class ProductRepository implements IProductRepository {
         },
       },
     });
+
+    return product;
+
+     // if (!product) return null;
+ // 
+     // const productNearPrices = await this._priceRepository.findByRange(
+     //   PriceFindManyByRangeDto.from({
+     //     lowestOnly: false,
+     //     productIdList: [product.id],
+     //     latitude: searchParameters.usersLatitude as number,
+     //     longitude: searchParameters.usersLongitude as number,
+     //     radius: searchParameters.rangeRadius ?? PRODUCT_DEFAULT_SEARCH_RANGE_IN_KM,
+     //   })
+     // );
+ // 
+     // const productsEstablishmentsLowestPrice = await this._establishmentRepository.find(
+     //   EstablishmentFindManyDto.from({
+     //     paginate: false,
+     //     id: productNearPrices.map((price) => price.establishmentId as string).join(','),
+     //   })
+     // );
+ // 
+     // productNearPrices.forEach(
+     //   (price) => (price.establishment = productsEstablishmentsLowestPrice.find(({ id }) => id === price.establishmentId))
+     // );
+ // 
+     // return product;
   }
 }

@@ -3,7 +3,12 @@ import { isValidUUID } from '@shared/utils';
 import { InvalidFieldException, MissingFieldException } from '@shared/errors';
 
 export default class UserFindOneDto extends BaseFindOneDto {
-  constructor(public id?: string, public firebaseId?: string, public email?: string, public withFirebaseId?: boolean) {
+  constructor(
+    public id?: string,
+    public firebaseId?: string,
+    public email?: string,
+    public withFirebaseId?: boolean,
+  ) {
     super(id);
   }
 
@@ -15,6 +20,11 @@ export default class UserFindOneDto extends BaseFindOneDto {
       body.id = undefined;
     }
     if (body.id && !body.withFirebaseId && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
-    return new UserFindOneDto(body.id, body.firebaseId, body.email, body.withFirebaseId);
+    return new UserFindOneDto(
+      body.id,
+      body.firebaseId,
+      body.email,
+      body.withFirebaseId,
+    );
   }
 }

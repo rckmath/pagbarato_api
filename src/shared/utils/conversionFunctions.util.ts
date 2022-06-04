@@ -13,7 +13,7 @@ export const arraySplitter = <T>(val: T | string | string[] | undefined) => {
   return toReturn as Array<T>;
 };
 
-export const stringToNumberConversor = (
+export const stringToNumber = (
   val: string | number | undefined | null,
   toFloat?: boolean,
   minimumValue?: number,
@@ -23,4 +23,10 @@ export const stringToNumberConversor = (
   if (typeof val == 'string') val = toFloat ? parseFloat(val) : parseInt(val);
   if (minimumValue && val < minimumValue) throw new InvalidFieldException(`${fieldName}`, val);
   return val;
+};
+
+export const kmToMeters = (km: number | string) => {
+  if (!km) return 0;
+  if (typeof km == 'string') km = parseFloat(km);
+  return km * 1000;
 };

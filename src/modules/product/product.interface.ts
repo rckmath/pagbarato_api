@@ -8,6 +8,8 @@ export interface IProduct {
   unit: ProductUnitType;
   createdAt: Date;
   updatedAt: Date;
+  lowestPrice?: number | null;
+  lowestPriceEstablishment?: string | null;
   prices?: Array<IPrice>;
 }
 

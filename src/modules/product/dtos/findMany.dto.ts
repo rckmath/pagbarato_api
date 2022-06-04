@@ -7,7 +7,7 @@ export default class ProductFindManyDto extends BaseFindManyDto {
     page?: number,
     pageSize?: number,
     orderBy?: string,
-    orderDescending?: boolean,
+    orderDescending = false,
     public paginate: boolean = true,
     public name?: string,
     public id?: string | Array<string>
@@ -21,10 +21,10 @@ export default class ProductFindManyDto extends BaseFindManyDto {
     body.pageSize = stringToNumberConversor(body.pageSize, false, 1, 'pageSize');
     body.orderDescending = body.orderDescending && typeof body.orderDescending == 'string' && JSON.parse(body.orderDescending);
     body.paginate = body.paginate && typeof body.paginate == 'string' && JSON.parse(body.paginate);
+    body.name = body.name?.split(' ').join('&');
     body.id.forEach((x) => {
       if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
     });
-
     return new ProductFindManyDto(
       body.page,
       body.pageSize,

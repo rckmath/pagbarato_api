@@ -8,7 +8,7 @@ x-common_env: &common_env
 services:
   db:
     container_name: database
-    image: postgres:14.1-alpine
+    image: postgis/postgis:14-master
     restart: always
     environment:
       - POSTGRES_USER=${DATABASE_USER}

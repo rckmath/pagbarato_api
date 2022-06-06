@@ -12,8 +12,8 @@ export default class UserCreateDto {
   ) {}
 
   static from(body: Partial<UserCreateDto>) {
-    if (!body.email) throw new MissingFieldException('email');
     if (!body.name) throw new MissingFieldException('name');
+    if (!body.email) throw new MissingFieldException('email');
     if (!body.password) throw new MissingFieldException('password');
     return new UserCreateDto(body.name, body.email, body.password, body.birthDate, body.role);
   }

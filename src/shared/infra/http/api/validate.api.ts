@@ -1,7 +1,7 @@
 import { BaseMiddleware } from '.';
 import { Request, Response, NextFunction } from 'express';
 
-export default class ValidateRequestMiddleware extends BaseMiddleware {
+export default class Validate extends BaseMiddleware {
   constructor(
     private readonly _DtoClass: { from: any },
     private readonly _withParams = false,
@@ -24,18 +24,18 @@ export default class ValidateRequestMiddleware extends BaseMiddleware {
   }
 
   static with(dto: any) {
-    return new ValidateRequestMiddleware(dto).execute;
+    return new Validate(dto).execute;
   }
 
   static withParams(dto: any) {
-    return new ValidateRequestMiddleware(dto, true).execute;
+    return new Validate(dto, true).execute;
   }
 
   static withQuery(dto: any) {
-    return new ValidateRequestMiddleware(dto, false, true).execute;
+    return new Validate(dto, false, true).execute;
   }
 
   static withAll(dto: any) {
-    return new ValidateRequestMiddleware(dto, false, false, true).execute;
+    return new Validate(dto, false, false, true).execute;
   }
 }

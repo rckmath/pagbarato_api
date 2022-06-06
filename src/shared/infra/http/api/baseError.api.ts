@@ -1,5 +1,12 @@
-import { FirebaseIntegrationException, InvalidFieldException, MissingFieldException, NotFoundException } from '@shared/errors';
 import * as express from 'express';
+
+import {
+  AuthenticationException,
+  FirebaseIntegrationException,
+  InvalidFieldException,
+  MissingFieldException,
+  NotFoundException,
+} from '@shared/errors';
 import BaseHttpResponse from './baseResponse.api';
 
 type Error = {
@@ -27,6 +34,11 @@ export default function errorHandlerMiddleware(
 
   if (err instanceof FirebaseIntegrationException || err?.name === 'FirebaseIntegrationException') {
     const response = BaseHttpResponse.failed(errorObject, 400);
+    return res.status(response.statusCode).json(response);
+  }
+
+  if (err instanceof AuthenticationException || err?.name === 'AuthenticationException') {
+    const response = BaseHttpResponse.failed(errorObject, 403);
     return res.status(response.statusCode).json(response);
   }
 

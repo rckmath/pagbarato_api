@@ -7,6 +7,17 @@ import { ProductCreateDto, ProductFindManyDto, ProductUpdateDto } from './dtos';
 
 @injectable()
 export class ProductRepository implements IProductRepository {
+  async findOrCreate(item: ProductCreateDto): Promise<IProduct> {
+    return _db.product.upsert({
+      where: { name: item.name },
+      update: {},
+      create: {
+        name: item.name,
+        unit: item.unit,
+      },
+    });
+  }
+
   async create(item: ProductCreateDto): Promise<IProduct> {
     return _db.product.create({
       data: {
@@ -31,7 +42,6 @@ export class ProductRepository implements IProductRepository {
   }
 
   async find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>> {
-    console.log(searchParameters);
     return _db.product.findMany({
       skip: searchParameters.paginate ? searchParameters.skip : undefined,
       take: searchParameters.paginate ? searchParameters.pageSize : undefined,

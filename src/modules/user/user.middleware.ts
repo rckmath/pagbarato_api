@@ -28,15 +28,15 @@ export default class AuthMiddleware extends BaseMiddleware {
 
       try {
         const decodedToken = await FirebaseClient.auth().verifyIdToken(token, true);
-
         const user = await this._userService.findOne({ firebaseId: decodedToken.uid });
-
         const auth: IAuth = {
           firebaseToken: token,
           firebaseId: decodedToken.uid,
           userId: user.id,
           role: user.role,
         }
+
+        console.log({ authenticatedUser: auth });
 
         req.body.auth = auth;
       } catch (err: any) {

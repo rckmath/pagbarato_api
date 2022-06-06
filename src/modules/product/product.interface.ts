@@ -26,7 +26,7 @@ export interface IProductRepository {
   findOrCreate(item: ProductCreateDto): Promise<IProduct>;
   create(item: ProductCreateDto): Promise<IProduct>;
   find(searchParameters: ProductFindManyDto): Promise<Array<IProduct>>;
-  findOne(id: IProduct['id']): Promise<IProduct | null>;
+  findOne(searchParameters: ProductFindOneDto): Promise<IProduct | null>;
   update(id: string, item: ProductUpdateDto): Promise<void>;
   delete(idList: Array<string>): Promise<void>;
   count(searchParameters: ProductFindManyDto): Promise<number>;

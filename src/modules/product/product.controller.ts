@@ -46,7 +46,7 @@ export class ProductController extends BaseHttpController implements Controller 
     return res.json(response);
   }
 
-  @httpGet('/:id', ValidateRequestMiddleware.withParams(ProductFindOneDto))
+  @httpGet('/:id', ValidateRequestMiddleware.withAll(ProductFindOneDto))
   public async getById(@request() req: express.Request, @response() res: express.Response) {
     const product = await this._productService.findOne(req.body);
     const response = BaseHttpResponse.success(product);

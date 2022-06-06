@@ -7,7 +7,6 @@ export default class UserDto {
     public readonly id: string,
     public readonly name: string,
     public readonly email: string,
-    public readonly preferredSearchRangeInKm: number,
     public readonly role: UserRoleType,
     public readonly createdAt: Date,
     public readonly birthDate?: Date | null,
@@ -20,12 +19,10 @@ export default class UserDto {
     if (!user.role) throw new MissingFieldException('role');
     if (!user.email) throw new MissingFieldException('email');
     if (!user.createdAt) throw new MissingFieldException('createdAt');
-    if (!user.preferredSearchRangeInKm) throw new MissingFieldException('preferredSearchRangeInKm');
     return new UserDto(
       user.id,
       user.name,
       user.email,
-      user.preferredSearchRangeInKm.toNumber(),
       user.role,
       user.createdAt,
       user.birthDate,

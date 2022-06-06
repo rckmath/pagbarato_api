@@ -4,6 +4,7 @@ import { EstablishmentDto } from '@establishment/dtos';
 
 import { IPrice } from '../price.interface';
 import { PriceType } from '../price.enum';
+import { Prisma } from '@prisma/client';
 
 export default class PriceDto {
   constructor(
@@ -26,13 +27,14 @@ export default class PriceDto {
     const user = price.user ? UserDto.from(price.user) : null;
     const product = price.product ? ProductDto.from(price.product) : null;
     const establishment = price.establishment ? EstablishmentDto.from(price.establishment) : null;
+    price.value = parseFloat(new Prisma.Decimal(price.value).toNumber().toFixed(2));
 
     return new PriceDto(
       price.id,
       price.userId,
       price.productId,
       price.establishmentId,
-      price.value.toNumber(),
+      price.value,
       price.type,
       price.isProductWithNearExpirationDate,
       price.createdAt,

@@ -7,7 +7,7 @@ import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IProductRepository, IProduct } from './product.interface';
 import { PRODUCT_DEFAULT_SEARCH_RANGE_IN_KM } from './product.enum';
-import { ProductCreateDto, ProductFindManyDto, ProductUpdateDto } from './dtos';
+import { ProductCreateDto, ProductFindManyDto, ProductFindOneDto, ProductUpdateDto } from './dtos';
 
 import { IPriceRepository } from '@price/price.interface';
 import { PriceFindManyByRangeDto } from '@price/dtos';
@@ -91,7 +91,9 @@ export class ProductRepository implements IProductRepository {
       ${where}
       ${order}
       ${searchParameters.orderDescending ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-      ${searchParameters.paginate ? Prisma.sql`LIMIT ${searchParameters.pageSize} OFFSET ${searchParameters.skip}` : Prisma.empty}`
+      ${
+        searchParameters.paginate ? Prisma.sql`LIMIT ${searchParameters.pageSize} OFFSET ${searchParameters.skip}` : Prisma.empty
+      }`
     );
 
     if (!searchParameters.priceFiltering) return products;
@@ -117,15 +119,17 @@ export class ProductRepository implements IProductRepository {
       (price) => (price.establishment = productsEstablishmentsLowestPrice.find(({ id }) => id === price.establishmentId))
     );
 
-    products = products.map((x) => {
-      const price = productsLowestPrice.find(({ productId }) => productId === x.id);
-      if (!price) return x;
-      return {
-        ...x,
-        lowestPrice: price?.value ? parseFloat(new Prisma.Decimal(price.value).toNumber().toFixed(2)) : undefined,
-        lowestPriceEstablishment: price?.establishment?.name,
-      };
-    }).filter(x => x.lowestPrice);
+    products = products
+      .map((x) => {
+        const price = productsLowestPrice.find(({ productId }) => productId === x.id);
+        if (!price) return x;
+        return {
+          ...x,
+          lowestPrice: price?.value ? parseFloat(new Prisma.Decimal(price.value).toNumber().toFixed(2)) : undefined,
+          lowestPriceEstablishment: price?.establishment?.name,
+        };
+      })
+      .filter((x) => x.lowestPrice);
 
     return products;
   }
@@ -139,44 +143,52 @@ export class ProductRepository implements IProductRepository {
     });
   }
 
-  async findOne(id: string): Promise<IProduct | null> {
+  async findOne(searchParameters: ProductFindOneDto): Promise<IProduct | null> {
     let product: IProduct | null = null;
-    
-    product = await _db.product.findUnique({
-      where: { id },
-      include: {
-        prices: {
-          orderBy: { value: 'asc' },
-          include: { establishment: true },
+
+    if (!searchParameters.rangeFiltering) {
+      product = await _db.product.findUnique({
+        where: { id: searchParameters.id },
+        include: {
+          prices: {
+            orderBy: { value: 'asc' },
+            include: { establishment: true },
+          },
         },
-      },
+      });
+
+      return product;
+    }
+
+    product = await _db.product.findUnique({
+      where: { id: searchParameters.id },
     });
 
-    return product;
+    if (!product) return null;
 
-     // if (!product) return null;
- // 
-     // const productNearPrices = await this._priceRepository.findByRange(
-     //   PriceFindManyByRangeDto.from({
-     //     lowestOnly: false,
-     //     productIdList: [product.id],
-     //     latitude: searchParameters.usersLatitude as number,
-     //     longitude: searchParameters.usersLongitude as number,
-     //     radius: searchParameters.rangeRadius ?? PRODUCT_DEFAULT_SEARCH_RANGE_IN_KM,
-     //   })
-     // );
- // 
-     // const productsEstablishmentsLowestPrice = await this._establishmentRepository.find(
-     //   EstablishmentFindManyDto.from({
-     //     paginate: false,
-     //     id: productNearPrices.map((price) => price.establishmentId as string).join(','),
-     //   })
-     // );
- // 
-     // productNearPrices.forEach(
-     //   (price) => (price.establishment = productsEstablishmentsLowestPrice.find(({ id }) => id === price.establishmentId))
-     // );
- // 
-     // return product;
+    const productNearPrices = await this._priceRepository.findByRange(
+      PriceFindManyByRangeDto.from({
+        lowestOnly: false,
+        productIdList: [product.id],
+        latitude: searchParameters.usersLatitude as number,
+        longitude: searchParameters.usersLongitude as number,
+        radius: searchParameters.rangeRadius ?? PRODUCT_DEFAULT_SEARCH_RANGE_IN_KM,
+      })
+    );
+
+    const productsEstablishmentsLowestPrice = await this._establishmentRepository.find(
+      EstablishmentFindManyDto.from({
+        paginate: false,
+        id: productNearPrices.map((price) => price.establishmentId as string).join(','),
+      })
+    );
+
+    productNearPrices.forEach(
+      (price) => (price.establishment = productsEstablishmentsLowestPrice.find(({ id }) => id === price.establishmentId))
+    );
+
+    product.prices = productNearPrices;
+
+    return product;
   }
 }

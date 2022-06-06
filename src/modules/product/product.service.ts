@@ -13,15 +13,18 @@ export class ProductService implements IProductService {
   constructor(
     @inject(TYPES.IProductRepository) private readonly _repository: IProductRepository,
     @inject(TYPES.IUserRepository) private readonly _userRepository: IUserRepository
-    ) {}
+  ) {}
 
   async createOne(product: ProductCreateDto): Promise<ProductDto> {
     const response = await this._repository.create(product);
-    return this.findOne({ id: response.id });
+    return this.findOne({
+      id: response.id,
+      rangeFiltering: false,
+    });
   }
 
-  async findOne(product: ProductFindOneDto): Promise<ProductDto> {
-    const foundProduct = await this._repository.findOne(product.id as string);
+  async findOne(searchParameters: ProductFindOneDto): Promise<ProductDto> {
+    const foundProduct = await this._repository.findOne(searchParameters);
     if (!foundProduct) throw new NotFoundException('Product');
     return ProductDto.from(foundProduct);
   }
@@ -36,13 +39,13 @@ export class ProductService implements IProductService {
   }
 
   async updateOne(item: ProductUpdateDto): Promise<void> {
-    await this.findOne({ id: item.id });
+    await this.findOne({ id: item.id, rangeFiltering: false });
     return this._repository.update(item.id, item);
   }
 
   async delete(item: ProductDeleteDto): Promise<void> {
     const idList = item.id as Array<string>;
-    const productList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
+    const productList = await Promise.all(idList.map(async (id) => this._repository.findOne({ id, rangeFiltering: false })));
     if (productList.length) await this._repository.delete(idList);
   }
 }

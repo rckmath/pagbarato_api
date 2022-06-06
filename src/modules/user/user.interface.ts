@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { UserCreateDto, UserFindManyDto, UserFindOneDto, UserDeleteDto, UserUpdateDto, UserDto } from './dtos';
 import { UserRoleType } from './user.enum';
 
@@ -7,7 +6,6 @@ export interface IUser {
   firebaseId: string;
   name: string;
   email: string;
-  preferredSearchRangeInKm: Prisma.Decimal;
   role: UserRoleType;
   birthDate: Date | null;
   createdAt: Date;

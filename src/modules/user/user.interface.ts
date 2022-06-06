@@ -2,6 +2,13 @@ import { Prisma } from '@prisma/client';
 import { UserCreateDto, UserFindManyDto, UserFindOneDto, UserDeleteDto, UserUpdateDto, UserDto } from './dtos';
 import { UserRoleType } from './user.enum';
 
+export interface IAuth {
+  userId: string;
+  firebaseId: string;
+  firebaseToken: string;
+  role: UserRoleType;
+}
+
 export interface IUser {
   id: string;
   firebaseId: string;

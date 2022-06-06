@@ -17,9 +17,9 @@ import { TYPES } from '@shared/ioc/types.ioc';
 import { IPriceService } from './price.interface';
 import { PriceCreateDto, PriceFindOneDto, PriceDeleteDto, PriceFindManyDto, PriceDto, PriceUpdateDto } from './dtos';
 
-import { BaseHttpResponse } from '@http/api';
-import { ValidateRequestMiddleware } from '@http/api';
+import { BaseHttpResponse, Validate } from '@http/api';
 import { BasePaginationDto } from '@shared/infra/http/dto';
+import AuthMiddleware from '@user/user.middleware';
 
 @controller('/price')
 export class PriceController extends BaseHttpController implements Controller {
@@ -27,14 +27,14 @@ export class PriceController extends BaseHttpController implements Controller {
     super();
   }
 
-  @httpPost('/', ValidateRequestMiddleware.with(PriceCreateDto))
+  @httpPost('/', AuthMiddleware.validateToken(), Validate.with(PriceCreateDto))
   public async create(@request() req: express.Request, @response() res: express.Response) {
     const createdPrice = await this._priceService.createOne(req.body);
     const response = BaseHttpResponse.success(createdPrice);
     return res.json(response);
   }
 
-  @httpGet('/', ValidateRequestMiddleware.withQuery(PriceFindManyDto))
+  @httpGet('/', AuthMiddleware.validateToken(), Validate.withQuery(PriceFindManyDto))
   public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
     let response;
     const [prices, priceCount] = await Promise.all([
@@ -46,21 +46,21 @@ export class PriceController extends BaseHttpController implements Controller {
     return res.json(response);
   }
 
-  @httpGet('/:id', ValidateRequestMiddleware.withParams(PriceFindOneDto))
+  @httpGet('/:id', AuthMiddleware.validateToken(), Validate.withParams(PriceFindOneDto))
   public async getById(@request() req: express.Request, @response() res: express.Response) {
     const price = await this._priceService.findOne(req.body);
     const response = BaseHttpResponse.success(price);
     return res.json(response);
   }
 
-  @httpPut('/:id', ValidateRequestMiddleware.withParams(PriceUpdateDto))
+  @httpPut('/:id', AuthMiddleware.validateToken(), Validate.withParams(PriceUpdateDto))
   public async updateById(@request() req: express.Request, @response() res: express.Response) {
     const price = await this._priceService.updateOne(req.body);
     const response = BaseHttpResponse.success(price);
     return res.json(response);
   }
 
-  @httpDelete('/:id', ValidateRequestMiddleware.withParams(PriceDeleteDto))
+  @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withParams(PriceDeleteDto))
   public async deleteById(@request() req: express.Request, @response() res: express.Response) {
     const price = await this._priceService.delete(req.body);
     const response = BaseHttpResponse.success(price);

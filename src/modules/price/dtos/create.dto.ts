@@ -3,7 +3,7 @@ import { PriceType } from '../price.enum';
 
 export default class PriceCreateDto {
   constructor(
-    public readonly userId: string,
+    public userId: string,
     public readonly establishmentId: string,
     public readonly value: number,
     public readonly type: PriceType = PriceType.COMMON,

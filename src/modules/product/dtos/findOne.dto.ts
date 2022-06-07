@@ -14,7 +14,6 @@ export default class ProductFindOneDto extends BaseFindOneDto {
   }
 
   static from(body: Partial<ProductFindOneDto>) {
-    console.log('Alou')
     if (!body.id) throw new MissingFieldException('id');
     if (body.id && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
     body.usersLatitude = stringToNumber(body.usersLatitude, true, undefined, 'usersLatitude');

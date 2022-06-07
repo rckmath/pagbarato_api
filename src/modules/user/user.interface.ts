@@ -8,6 +8,10 @@ export interface IAuth {
   role: UserRoleType;
 }
 
+export interface IAuthOptions {
+  setUserIdInBody: boolean,
+}
+
 export interface IUser {
   id: string;
   firebaseId: string;

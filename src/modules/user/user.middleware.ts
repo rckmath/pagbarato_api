@@ -5,7 +5,7 @@ import { BaseMiddleware } from '@http/api';
 import FirebaseClient from '@infra/firebase';
 import { AuthenticationException } from '@shared/errors';
 
-import { IUserService, IAuth } from './user.interface';
+import { IUserService, IAuth, IAuthOptions } from './user.interface';
 import { TYPES } from '@shared/ioc/types.ioc';
 import { container } from '@shared/ioc';
 
@@ -16,7 +16,7 @@ const extractToken = (authorization: string) => {
 };
 
 export default class AuthMiddleware extends BaseMiddleware {
-  constructor(@inject(TYPES.IUserService) private readonly _userService: IUserService) {
+  constructor(@inject(TYPES.IUserService) private readonly _userService: IUserService, private readonly options?: IAuthOptions) {
     super();
   }
 
@@ -34,9 +34,9 @@ export default class AuthMiddleware extends BaseMiddleware {
           firebaseId: decodedToken.uid,
           userId: user.id,
           role: user.role,
-        }
+        };
 
-        console.log({ authenticatedUser: auth });
+        if (this.options?.setUserIdInBody) req.body.userId = auth.userId;
 
         req.body.auth = auth;
       } catch (err: any) {
@@ -49,8 +49,8 @@ export default class AuthMiddleware extends BaseMiddleware {
     }
   }
 
-  static validateToken() {
-    const userService: IUserService = container.get(TYPES.IUserService)
-    return new AuthMiddleware(userService).execute;
+  static validateToken(options?: IAuthOptions) {
+    const userService: IUserService = container.get(TYPES.IUserService);
+    return new AuthMiddleware(userService, options).execute;
   }
 }

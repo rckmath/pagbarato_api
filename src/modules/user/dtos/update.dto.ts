@@ -9,7 +9,6 @@ export default class UserUpdateDto {
     public readonly email?: string,
     public readonly role?: UserRoleType,
     public readonly birthDate?: Date | null,
-    public readonly preferredSearchRangeInKm?: number,
     public readonly password?: string
   ) {}
 
@@ -22,7 +21,6 @@ export default class UserUpdateDto {
       body.email,
       body.role,
       body.birthDate,
-      body.preferredSearchRangeInKm,
       body.password
     );
   }

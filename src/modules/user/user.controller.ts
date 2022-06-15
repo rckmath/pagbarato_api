@@ -14,12 +14,13 @@ import {
 
 import { TYPES } from '@shared/ioc/types.ioc';
 
+import AuthMiddleware from './user.middleware';
+
 import { IUserService } from './user.interface';
 import { UserCreateDto, UserFindOneDto, UserDeleteDto, UserFindManyDto, UserDto, UserUpdateDto } from './dtos';
 
-import { BaseHttpResponse, Validate } from '@http/api';
+import { BaseHttpResponse, Request, Validate } from '@http/api';
 import { BasePaginationDto } from '@http/dto';
-import AuthMiddleware from './user.middleware';
 
 @controller('/user')
 export class UserController extends BaseHttpController implements Controller {
@@ -28,14 +29,14 @@ export class UserController extends BaseHttpController implements Controller {
   }
 
   @httpPost('/', Validate.with(UserCreateDto))
-  public async create(@request() req: express.Request, @response() res: express.Response) {
+  public async create(@request() req: Request, @response() res: express.Response) {
     const createdUser = await this._userService.createOne(req.body);
     const response = BaseHttpResponse.success(createdUser);
     return res.json(response);
   }
 
   @httpGet('/', AuthMiddleware.validateToken(), Validate.withQuery(UserFindManyDto))
-  public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
+  public async getWithPagination(@request() req: Request, @response() res: express.Response) {
     let response;
     const [users, userCount] = await Promise.all([this._userService.findMany(req.body), this._userService.count(req.body)]);
     response = new BasePaginationDto<UserDto>(userCount, parseInt(req.body.page), users);
@@ -44,21 +45,21 @@ export class UserController extends BaseHttpController implements Controller {
   }
 
   @httpGet('/:id', AuthMiddleware.validateToken(), Validate.withAll(UserFindOneDto))
-  public async getById(@request() req: express.Request, @response() res: express.Response) {
+  public async getById(@request() req: Request, @response() res: express.Response) {
     const user = await this._userService.findOne(req.body);
     const response = BaseHttpResponse.success(user);
     return res.json(response);
   }
 
   @httpPut('/:id', AuthMiddleware.validateToken(), Validate.withParams(UserUpdateDto))
-  public async updateById(@request() req: express.Request, @response() res: express.Response) {
+  public async updateById(@request() req: Request, @response() res: express.Response) {
     const user = await this._userService.updateOne(req.body);
     const response = BaseHttpResponse.success(user);
     return res.json(response);
   }
 
   @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withParams(UserDeleteDto))
-  public async deleteById(@request() req: express.Request, @response() res: express.Response) {
+  public async deleteById(@request() req: Request, @response() res: express.Response) {
     const user = await this._userService.delete(req.body);
     const response = BaseHttpResponse.success(user);
     return res.json(response);

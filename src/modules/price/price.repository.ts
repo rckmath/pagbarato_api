@@ -1,10 +1,10 @@
 import { injectable } from 'inversify';
 
 import { db as _db } from '@database/index';
-import { Prisma } from '@prisma/client';
+import { Price, Prisma } from '@prisma/client';
 
 import { IPriceRepository, IPrice } from './price.interface';
-import { PriceCreateDto, PriceFindManyDto, PriceUpdateDto } from './dtos';
+import { PriceCreateDto, PriceFindManyDto, PriceFindManyByRangeDto, PriceUpdateDto } from './dtos';
 
 @injectable()
 export class PriceRepository implements IPriceRepository {
@@ -52,6 +52,38 @@ export class PriceRepository implements IPriceRepository {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
       },
     });
+  }
+
+  async findByRange(searchParameters: PriceFindManyByRangeDto): Promise<Array<IPrice>> {
+    let response: IPrice[] = [];
+
+    const { latitude, longitude, radius, productIdList, lowestOnly } = searchParameters;
+
+    const select = !lowestOnly
+      ? Prisma.sql`SELECT * FROM "Price" `
+      : Prisma.sql`SELECT DISTINCT ON("Price"."productId") "Price"."productId", "Price"."establishmentId", "Price"."value" FROM "Price"`;
+
+    const join = Prisma.sql`LEFT OUTER JOIN "Establishment" ON "Price"."establishmentId"="Establishment"."id" `;
+
+    const where = Prisma.sql`WHERE "Price"."productId" IN (${Prisma.join(
+      productIdList.map((x) => x)
+    )}) AND ST_DWithin(ST_MakePoint("Establishment"."longitude","Establishment"."latitude"), ST_MakePoint(${longitude}, ${latitude})::geography, ${radius} * 1) `;
+
+    const order = !lowestOnly
+      ? Prisma.sql`ORDER BY "Price"."value" ASC `
+      : Prisma.sql`ORDER BY "Price"."productId", "Price"."value" ASC `;
+
+    const limit = lowestOnly ? Prisma.sql`LIMIT ${productIdList.length}` : Prisma.empty;
+
+    response = await _db.$queryRaw<Price[]>(
+      Prisma.sql`${select}
+        ${join}
+        ${where}
+        ${order}
+        ${limit}`
+    );
+
+    return response;
   }
 
   async count(searchParameters: PriceFindManyDto): Promise<number> {

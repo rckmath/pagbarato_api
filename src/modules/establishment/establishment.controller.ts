@@ -24,8 +24,8 @@ import {
   EstablishmentUpdateDto,
 } from './dtos';
 
-import { BaseHttpResponse, Validate } from '@http/api';
-import { BasePaginationDto } from '@shared/infra/http/dto';
+import { BaseHttpResponse, Request, Validate } from '@http/api';
+import { BasePaginationDto } from '@http/dto';
 import AuthMiddleware from '@user/user.middleware';
 
 @controller('/establishment')
@@ -35,14 +35,14 @@ export class EstablishmentController extends BaseHttpController implements Contr
   }
 
   @httpPost('/', AuthMiddleware.validateToken(), Validate.with(EstablishmentCreateDto))
-  public async create(@request() req: express.Request, @response() res: express.Response) {
+  public async create(@request() req: Request, @response() res: express.Response) {
     const createdEstablishment = await this._establishmentService.createOne(req.body);
     const response = BaseHttpResponse.success(createdEstablishment);
     return res.json(response);
   }
 
   @httpGet('/', AuthMiddleware.validateToken(), Validate.withQuery(EstablishmentFindManyDto))
-  public async getWithPagination(@request() req: express.Request, @response() res: express.Response) {
+  public async getWithPagination(@request() req: Request, @response() res: express.Response) {
     let response;
     const [establishments, establishmentCount] = await Promise.all([
       this._establishmentService.findMany(req.body),
@@ -57,21 +57,21 @@ export class EstablishmentController extends BaseHttpController implements Contr
   }
 
   @httpGet('/:id', AuthMiddleware.validateToken(), Validate.withParams(EstablishmentFindOneDto))
-  public async getById(@request() req: express.Request, @response() res: express.Response) {
+  public async getById(@request() req: Request, @response() res: express.Response) {
     const establishment = await this._establishmentService.findOne(req.body);
     const response = BaseHttpResponse.success(establishment);
     return res.json(response);
   }
 
   @httpPut('/:id', AuthMiddleware.validateToken(), Validate.withParams(EstablishmentUpdateDto))
-  public async updateById(@request() req: express.Request, @response() res: express.Response) {
+  public async updateById(@request() req: Request, @response() res: express.Response) {
     const establishment = await this._establishmentService.updateOne(req.body);
     const response = BaseHttpResponse.success(establishment);
     return res.json(response);
   }
 
   @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withParams(EstablishmentDeleteDto))
-  public async deleteById(@request() req: express.Request, @response() res: express.Response) {
+  public async deleteById(@request() req: Request, @response() res: express.Response) {
     const establishment = await this._establishmentService.delete(req.body);
     const response = BaseHttpResponse.success(establishment);
     return res.json(response);

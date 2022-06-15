@@ -16,7 +16,6 @@ export class UserRepository implements IUserRepository {
         birthDate: item.birthDate,
         firebaseId: item.firebaseId as string,
         role: item.role,
-        preferredSearchRangeInKm: new Prisma.Decimal(item.preferredSearchRangeInKm),
       },
     });
   }
@@ -29,7 +28,6 @@ export class UserRepository implements IUserRepository {
         email: item.email,
         birthDate: item.birthDate,
         role: item.role ?? undefined,
-        preferredSearchRangeInKm: item.preferredSearchRangeInKm ? new Prisma.Decimal(item.preferredSearchRangeInKm) : undefined,
       },
     });
   }

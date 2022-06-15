@@ -1,6 +1,6 @@
 import { BaseFindManyDto } from '@http/dto';
 import { InvalidFieldException } from '@shared/errors';
-import { arraySplitter, isValidUUID, stringToNumberConversor } from '@shared/utils';
+import { arraySplitter, isValidUUID, stringToNumber } from '@shared/utils';
 import { UserRoleType } from '../user.enum';
 
 export default class UserFindManyDto extends BaseFindManyDto {
@@ -26,8 +26,8 @@ export default class UserFindManyDto extends BaseFindManyDto {
       if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
     });
 
-    body.page = stringToNumberConversor(body.page, false, 1, 'page');
-    body.pageSize = stringToNumberConversor(body.pageSize, false, 1, 'pageSize');
+    body.page = stringToNumber(body.page, false, 1, 'page');
+    body.pageSize = stringToNumber(body.pageSize, false, 1, 'pageSize');
     body.orderDescending = body.orderDescending && typeof body.orderDescending == 'string' && JSON.parse(body.orderDescending);
 
     return new UserFindManyDto(

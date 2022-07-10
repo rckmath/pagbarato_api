@@ -46,6 +46,19 @@ export class PriceController extends BaseHttpController implements Controller {
     return res.json(response);
   }
 
+  @httpGet('/mine', AuthMiddleware.validateToken({ setUserIdInBody: true }), Validate.withQuery(PriceFindManyDto))
+  public async getMine(@request() req: Request, @response() res: express.Response) {
+    let response;
+    req.body.paginate = false;
+    const [prices, priceCount] = await Promise.all([
+      this._priceService.findMany(req.body),
+      req.body.paginate ? this._priceService.count(req.body) : undefined,
+    ]);
+    response = req.body.paginate ? new BasePaginationDto<PriceDto>(priceCount, parseInt(req.body.page), prices) : prices;
+    response = BaseHttpResponse.success(response);
+    return res.json(response);
+  }
+
   @httpGet('/:id', AuthMiddleware.validateToken(), Validate.withParams(PriceFindOneDto))
   public async getById(@request() req: Request, @response() res: express.Response) {
     const price = await this._priceService.findOne(req.body);

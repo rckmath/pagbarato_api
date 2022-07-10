@@ -1,13 +1,13 @@
 import { inject, injectable } from 'inversify';
 
 import { IUserRepository, IUserService } from './user.interface';
+import { FIREBASE_ERROR_MESSAGE } from './user.errors';
 
 import { TYPES } from '@shared/ioc/types.ioc';
 import { UserCreateDto, UserDeleteDto, UserDto, UserFindManyDto, UserFindOneDto, UserUpdateDto } from './dtos';
 
 import FirebaseClient from '@infra/firebase';
 import { FirebaseIntegrationException, NotFoundException } from '@shared/errors';
-import { FIREBASE_ERROR_MESSAGE } from './user.errors';
 
 @injectable()
 export class UserService implements IUserService {

@@ -50,6 +50,7 @@ export class PriceRepository implements IPriceRepository {
       },
       where: {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        userId: { in: searchParameters.userId?.length ? searchParameters.userId : undefined },
       },
     });
   }

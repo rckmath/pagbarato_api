@@ -1,4 +1,5 @@
 import helmet from 'helmet';
+import cors from 'cors';
 import * as express from 'express';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
@@ -20,6 +21,7 @@ export default class Server {
   }
 
   private setConfig = (app: express.Application) => {
+    app.use(cors());
     app.use(
       express.urlencoded({
         extended: true,

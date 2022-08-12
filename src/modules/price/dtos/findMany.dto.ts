@@ -9,6 +9,7 @@ export default class PriceFindManyDto extends BaseFindManyDto {
     orderBy?: string,
     orderDescending?: boolean,
     public paginate: boolean = true,
+    public includeDetails: boolean = false,
     public id?: string | Array<string>,
     public userId?: string | Array<string>
   ) {
@@ -22,6 +23,7 @@ export default class PriceFindManyDto extends BaseFindManyDto {
     body.pageSize = stringToNumber(body.pageSize, false, 1, 'pageSize');
     body.orderDescending = body.orderDescending && typeof body.orderDescending == 'string' && JSON.parse(body.orderDescending);
     body.paginate = body.paginate && typeof body.paginate == 'string' && JSON.parse(body.paginate);
+    body.includeDetails = body.includeDetails && typeof body.includeDetails == 'string' && JSON.parse(body.includeDetails);
     body.id.forEach((x) => {
       if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
     });
@@ -29,6 +31,15 @@ export default class PriceFindManyDto extends BaseFindManyDto {
       if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
     });
     console.log({ userId: body.userId });
-    return new PriceFindManyDto(body.page, body.pageSize, body.orderBy, body.orderDescending, body.paginate, body.id, body.userId);
+    return new PriceFindManyDto(
+      body.page,
+      body.pageSize,
+      body.orderBy,
+      body.orderDescending,
+      body.paginate,
+      body.includeDetails,
+      body.id,
+      body.userId
+    );
   }
 }

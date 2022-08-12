@@ -1,7 +1,6 @@
 import { injectable } from 'inversify';
 
 import { db as _db } from '@database/index';
-import { Prisma } from '@prisma/client';
 
 import { IUserRepository, IUser } from './user.interface';
 import { UserCreateDto, UserFindManyDto, UserFindOneDto, UserUpdateDto } from './dtos';

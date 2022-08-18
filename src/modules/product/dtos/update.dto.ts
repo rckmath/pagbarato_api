@@ -8,6 +8,6 @@ export default class ProductUpdateDto {
   static from(body: Partial<ProductUpdateDto>) {
     if (!body.id) throw new MissingFieldException('id');
     if (body.id && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
-    return new ProductUpdateDto(body.id, body.name);
+    return new ProductUpdateDto(body.id, body.name, body.unit);
   }
 }

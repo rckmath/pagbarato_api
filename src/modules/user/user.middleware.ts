@@ -40,7 +40,7 @@ export default class AuthMiddleware extends BaseMiddleware {
 
         req.body.auth = auth;
       } catch (err: any) {
-        throw new AuthenticationException(err.message);
+        throw new AuthenticationException(JSON.stringify(err));
       }
 
       next();

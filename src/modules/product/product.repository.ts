@@ -47,9 +47,7 @@ export class ProductRepository implements IProductRepository {
 
   async findOrCreate(item: ProductCreateDto): Promise<IProduct> {
     const foundProducts = await _db.product.findMany({
-      where: {
-        name: { search: item.name.split(' ').join('&') },
-      },
+      where: { name: { search: item.name.split(' ').join('&') } },
     });
 
     if (foundProducts.length === 1) return foundProducts[0];

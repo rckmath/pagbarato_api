@@ -16,7 +16,8 @@ export default class EstablishmentDto {
       establishment.name,
       establishment.latitude.toNumber(),
       establishment.longitude.toNumber(),
-      establishment.createdAt
+      establishment.createdAt,
+      establishment.updatedAt
     );
   }
 

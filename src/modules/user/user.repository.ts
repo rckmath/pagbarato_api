@@ -37,8 +37,8 @@ export class UserRepository implements IUserRepository {
 
   async find(searchParameters: UserFindManyDto): Promise<Array<IUser>> {
     return _db.user.findMany({
-      skip: searchParameters.skip,
-      take: searchParameters.pageSize,
+      skip: searchParameters.paginate ? searchParameters.skip : undefined,
+      take: searchParameters.paginate ? searchParameters.pageSize : undefined,
       orderBy: {
         [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
       },

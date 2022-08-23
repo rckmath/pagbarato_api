@@ -38,8 +38,11 @@ export class UserController extends BaseHttpController implements Controller {
   @httpGet('/', AuthMiddleware.validateToken(), Validate.withQuery(UserFindManyDto))
   public async getWithPagination(@request() req: Request, @response() res: express.Response) {
     let response;
-    const [users, userCount] = await Promise.all([this._userService.findMany(req.body), this._userService.count(req.body)]);
-    response = new BasePaginationDto<UserDto>(userCount, parseInt(req.body.page), users);
+    const [users, userCount] = await Promise.all([
+      this._userService.findMany(req.body),
+      req.body.paginate ? this._userService.count(req.body) : undefined,
+    ]);
+    response = req.body.paginate ? new BasePaginationDto<UserDto>(userCount, parseInt(req.body.page), users) : users;
     response = BaseHttpResponse.success(response);
     return res.json(response);
   }

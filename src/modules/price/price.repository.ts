@@ -77,9 +77,7 @@ export class PriceRepository implements IPriceRepository {
       productIdList.map((x) => x)
     )}) AND ST_DWithin(ST_MakePoint("Establishment"."longitude","Establishment"."latitude"), ST_MakePoint(${longitude}, ${latitude})::geography, ${radius} * 1) `;
 
-    const order = !lowestOnly
-      ? Prisma.sql`ORDER BY "Price"."value" ASC `
-      : Prisma.sql`ORDER BY "Price"."productId", "Price"."value" ASC `;
+    const order = !lowestOnly ? Prisma.sql`ORDER BY "Price"."value" ASC ` : Prisma.sql`ORDER BY "Price"."productId", "Price"."value" ASC `;
 
     const limit = lowestOnly ? Prisma.sql`LIMIT ${productIdList.length}` : Prisma.empty;
 

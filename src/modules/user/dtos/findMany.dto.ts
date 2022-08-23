@@ -9,6 +9,7 @@ export default class UserFindManyDto extends BaseFindManyDto {
     pageSize?: number,
     orderBy?: string,
     orderDescending?: boolean,
+    public paginate: boolean = true,
     public readonly name?: string,
     public readonly email?: string,
     public readonly birthDate?: Date,
@@ -28,6 +29,7 @@ export default class UserFindManyDto extends BaseFindManyDto {
 
     body.page = stringToNumber(body.page, false, 1, 'page');
     body.pageSize = stringToNumber(body.pageSize, false, 1, 'pageSize');
+    body.paginate = body.paginate && typeof body.paginate == 'string' && JSON.parse(body.paginate);
     body.orderDescending = body.orderDescending && typeof body.orderDescending == 'string' && JSON.parse(body.orderDescending);
 
     return new UserFindManyDto(
@@ -35,6 +37,7 @@ export default class UserFindManyDto extends BaseFindManyDto {
       body.pageSize,
       body.orderBy,
       body.orderDescending,
+      body.paginate,
       body.name,
       body.email,
       body.birthDate,

@@ -82,16 +82,15 @@ export class ProductRepository implements IProductRepository {
     let products: Array<IProduct> = [];
 
     const where = getWhereQuery(searchParameters);
-    const order = Prisma.sql`ORDER BY "Product"."name"`;
+    const order = searchParameters.paginate ? Prisma.sql`ORDER BY "Product"."updatedAt"` : Prisma.sql`ORDER BY "Product"."name"`;
+    const orderDirection = searchParameters.orderDescending ? Prisma.sql`DESC` : Prisma.sql`ASC`;
 
     products = await _db.$queryRaw<Product[]>(
       Prisma.sql`SELECT * from "Product"
       ${where}
       ${order}
-      ${searchParameters.orderDescending ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-      ${
-        searchParameters.paginate ? Prisma.sql`LIMIT ${searchParameters.pageSize} OFFSET ${searchParameters.skip}` : Prisma.empty
-      }`
+      ${orderDirection}
+      ${searchParameters.paginate ? Prisma.sql`LIMIT ${searchParameters.pageSize} OFFSET ${searchParameters.skip}` : Prisma.empty}`
     );
 
     if (!searchParameters.priceFiltering) return products;

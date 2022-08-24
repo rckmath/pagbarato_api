@@ -29,6 +29,7 @@
       "@price/*": ["./src/modules/price/*"],
       "@http/*": ["./src/shared/infra/http/*"],
       "@product/*": ["./src/modules/product/*"],
+      "@dashboard/*": ["./src/modules/dashboard/*"],
       "@database/*": ["./src/shared/infra/database/*"],
       "@establishment/*": ["./src/modules/establishment/*"],
     },

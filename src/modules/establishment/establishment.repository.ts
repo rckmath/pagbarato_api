@@ -45,6 +45,10 @@ export class EstablishmentRepository implements IEstablishmentRepository {
       where: {
         name: { contains: searchParameters.name },
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
       },
     });
 
@@ -59,6 +63,10 @@ export class EstablishmentRepository implements IEstablishmentRepository {
       where: {
         name: { contains: searchParameters.name },
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
       },
     });
 

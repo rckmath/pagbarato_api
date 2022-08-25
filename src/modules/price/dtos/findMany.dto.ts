@@ -30,7 +30,6 @@ export default class PriceFindManyDto extends BaseFindManyDto {
     body.userId.forEach((x) => {
       if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
     });
-    console.log({ userId: body.userId });
     return new PriceFindManyDto(
       body.page,
       body.pageSize,

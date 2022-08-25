@@ -99,6 +99,10 @@ export class PriceRepository implements IPriceRepository {
       },
       where: {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
       },
     });
   }

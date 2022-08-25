@@ -9,6 +9,7 @@ import { Router, errorHandlerMiddleware } from './api';
 import '@user/user.controller';
 import '@price/price.controller';
 import '@product/product.controller';
+import '@dashboard/dashboard.controller';
 import '@establishment/establishment.controller';
 
 export default class Server {

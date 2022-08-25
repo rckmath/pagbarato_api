@@ -1,4 +1,5 @@
-import { MissingFieldException } from '@shared/errors';
+import { InvalidFieldException, MissingFieldException } from '@shared/errors';
+import { isValidUUID } from '@shared/utils';
 import { PriceType } from '../price.enum';
 
 export default class PriceCreateDto {
@@ -18,6 +19,10 @@ export default class PriceCreateDto {
     if (!body.userId) throw new MissingFieldException('userId');
     if (!body.establishmentId) throw new MissingFieldException('establishmentId');
     if (!body.productId && !body.productName) throw new MissingFieldException('productId or productName');
+    if (body.userId && !isValidUUID(body.userId)) throw new InvalidFieldException('userId', body.userId);
+    if (body.productId && !isValidUUID(body.productId)) throw new InvalidFieldException('productId', body.productId);
+    if (body.establishmentId && !isValidUUID(body.establishmentId))
+      throw new InvalidFieldException('establishmentId', body.establishmentId);
 
     return new PriceCreateDto(
       body.userId,

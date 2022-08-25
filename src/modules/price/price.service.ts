@@ -39,13 +39,16 @@ export class PriceService implements IPriceService {
     return this._repository.count(searchParameters);
   }
 
-  async updateOne(item: PriceUpdateDto): Promise<void> {
-    await this.findOne({ id: item.id });
-    return this._repository.update(item.id, item);
+  async updateOne(price: PriceUpdateDto): Promise<void> {
+    price.productId = price.productName
+      ? (await this._productRepository.findOrCreate({ name: price.productName, unit: ProductUnitType.EA })).id
+      : price.productId;
+    await this.findOne({ id: price.id });
+    return this._repository.update(price.id, price);
   }
 
-  async delete(item: PriceDeleteDto): Promise<void> {
-    const idList = item.id as Array<string>;
+  async delete(price: PriceDeleteDto): Promise<void> {
+    const idList = price.id as Array<string>;
     const priceList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
     if (priceList.length) await this._repository.delete(idList);
   }

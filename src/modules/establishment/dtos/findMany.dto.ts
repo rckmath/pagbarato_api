@@ -8,11 +8,13 @@ export default class EstablishmentFindManyDto extends BaseFindManyDto {
     pageSize?: number,
     orderBy?: string,
     orderDescending?: boolean,
+    fromDate?: Date,
+    toDate?: Date,
     public paginate: boolean = true,
     public readonly name?: string,
     public id?: string | Array<string>
   ) {
-    super(page, pageSize, orderBy, orderDescending);
+    super(page, pageSize, orderBy, orderDescending, fromDate, toDate);
   }
 
   static from(body: Partial<EstablishmentFindManyDto>) {
@@ -24,11 +26,15 @@ export default class EstablishmentFindManyDto extends BaseFindManyDto {
     body.id.forEach((x) => {
       if (!isValidUUID(x)) throw new InvalidFieldException('id', x);
     });
+    body.fromDate = body.fromDate && new Date(body.fromDate);
+    body.toDate = body.toDate && new Date(body.toDate);
     return new EstablishmentFindManyDto(
       body.page,
       body.pageSize,
       body.orderBy,
       body.orderDescending,
+      body.fromDate,
+      body.toDate,
       body.paginate,
       body.name,
       body.id

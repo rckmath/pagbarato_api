@@ -7,7 +7,8 @@ export default class PriceUpdateDto {
     public readonly id: string,
     public readonly userId?: string,
     public readonly establishmentId?: string,
-    public readonly productId?: string,
+    public productId?: string,
+    public readonly productName?: string,
     public readonly value?: number,
     public readonly type?: PriceType,
     public readonly expiresAt?: Date,
@@ -18,13 +19,17 @@ export default class PriceUpdateDto {
     if (!body.id) throw new MissingFieldException('id');
     if (body.id && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
     if (body.userId && !isValidUUID(body.userId)) throw new InvalidFieldException('userId', body.userId);
-    if (body.establishmentId && !isValidUUID(body.establishmentId)) throw new InvalidFieldException('establishmentId', body.establishmentId);
+    if (body.establishmentId && !isValidUUID(body.establishmentId))
+      throw new InvalidFieldException('establishmentId', body.establishmentId);
+    if (!body.productId && !body.productName) throw new MissingFieldException('productId or productName');
     if (body.productId && !isValidUUID(body.productId)) throw new InvalidFieldException('productId', body.productId);
+
     return new PriceUpdateDto(
       body.id,
       body.userId,
       body.establishmentId,
       body.productId,
+      body.productName,
       body.value,
       body.type,
       body.expiresAt,

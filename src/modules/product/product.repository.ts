@@ -136,6 +136,10 @@ export class ProductRepository implements IProductRepository {
       where: {
         name: { search: searchParameters.name },
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
       },
     });
   }

@@ -47,6 +47,10 @@ export class UserRepository implements IUserRepository {
         email: { contains: searchParameters.email },
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
         role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
       },
     });
   }
@@ -61,6 +65,10 @@ export class UserRepository implements IUserRepository {
         email: { contains: searchParameters.email },
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
         role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
       },
     });
   }

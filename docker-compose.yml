@@ -2,14 +2,13 @@ version: '3.8'
 
 x-common_env: &common_env
   PORT: ${PORT}
-  NODE_ENV: ${NODE_ENV}
   DATABASE_USER: ${DATABASE_USER}
   DATABASE_PASS: ${DATABASE_PASS}
 
 services:
   db:
     container_name: database
-    image: postgres:14.1-alpine
+    image: postgis/postgis:14-master
     restart: always
     environment:
       - POSTGRES_USER=${DATABASE_USER}

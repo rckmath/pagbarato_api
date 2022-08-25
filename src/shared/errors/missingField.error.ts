@@ -3,6 +3,6 @@ export class MissingFieldException extends Error {
 
   constructor(fieldName: string) {
     super('Missing field ' + fieldName);
-    Object.freeze(this)
+    Object.freeze(this);
   }
 }

@@ -1,12 +1,16 @@
 import helmet from 'helmet';
+import cors from 'cors';
 import * as express from 'express';
 import { Container } from 'inversify';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
-import { Router } from './api';
+import { Router, errorHandlerMiddleware } from './api';
 
-import { errorHandlerMiddleware } from './api';
 import '@user/user.controller';
+import '@price/price.controller';
+import '@product/product.controller';
+import '@dashboard/dashboard.controller';
+import '@establishment/establishment.controller';
 
 export default class Server {
   private readonly _server: InversifyExpressServer;
@@ -18,6 +22,7 @@ export default class Server {
   }
 
   private setConfig = (app: express.Application) => {
+    app.use(cors());
     app.use(
       express.urlencoded({
         extended: true,

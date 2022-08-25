@@ -1,60 +1,85 @@
 import { injectable } from 'inversify';
 
-import { PrismaService } from '@database/prisma';
+import { db as _db } from '@database/index';
 
-import { UserEntity } from './user.entity';
-import { IUserRepository, User, UserComplete } from './user.interface';
-import { UserRoleType as PrismaUserRoleType } from '@prisma/client';
-import FirebaseClient from '@infra/firebase';
+import { IUserRepository, IUser } from './user.interface';
+import { UserCreateDto, UserFindManyDto, UserFindOneDto, UserUpdateDto } from './dtos';
 
 @injectable()
-export class UserRepository<T> implements IUserRepository<UserEntity> {
-  constructor(private readonly _prisma: PrismaService) {}
-
-  async create(item: UserEntity): Promise<User> {
-    const userCreated = await this._prisma.user.create({
+export class UserRepository implements IUserRepository {
+  async create(item: UserCreateDto): Promise<IUser> {
+    return _db.user.create({
       data: {
         name: item.name,
+        email: item.email,
         birthDate: item.birthDate,
-        firebaseId: item.firebaseId,
-        role: item.role as PrismaUserRoleType,
+        firebaseId: item.firebaseId as string,
+        role: item.role,
       },
     });
-
-    return {
-      id: userCreated.id,
-      name: userCreated.name,
-      createdAt: userCreated.createdAt,
-    };
   }
 
-  async update(_id: string, _item: Partial<T>): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async update(id: string, item: UserUpdateDto): Promise<void> {
+    await _db.user.update({
+      where: { id },
+      data: {
+        name: item.name,
+        email: item.email,
+        birthDate: item.birthDate,
+        role: item.role ?? undefined,
+      },
+    });
   }
 
-  async delete(_id: string): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async delete(idList: Array<string>): Promise<void> {
+    await _db.user.deleteMany({ where: { id: { in: idList } } });
   }
 
-  async find(_item: Partial<T>): Promise<User[]> {
-    throw new Error('Method not implemented.');
+  async find(searchParameters: UserFindManyDto): Promise<Array<IUser>> {
+    return _db.user.findMany({
+      skip: searchParameters.paginate ? searchParameters.skip : undefined,
+      take: searchParameters.paginate ? searchParameters.pageSize : undefined,
+      orderBy: {
+        [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
+      },
+      where: {
+        name: { contains: searchParameters.name },
+        email: { contains: searchParameters.email },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
+      },
+    });
   }
 
-  async findOne(id: string): Promise<UserComplete | null> {
-    const foundUser = await this._prisma.user.findUnique({ where: { id } });
+  async count(searchParameters: UserFindManyDto): Promise<number> {
+    return _db.user.count({
+      orderBy: {
+        [`${searchParameters.orderBy}`]: searchParameters.orderDescending ? 'desc' : 'asc',
+      },
+      where: {
+        name: { contains: searchParameters.name },
+        email: { contains: searchParameters.email },
+        id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
+        role: { in: searchParameters.role?.length ? searchParameters.role : undefined },
+        createdAt: {
+          gte: searchParameters.fromDate,
+          lte: searchParameters.toDate,
+        },
+      },
+    });
+  }
 
-    if (!foundUser) return foundUser;
-
-    const userFirebase = await FirebaseClient.auth().getUser(foundUser.firebaseId);
-
-    return {
-      id: foundUser.id,
-      role: foundUser.role,
-      name: foundUser.name,
-      email: userFirebase.email || '',
-      createdAt: foundUser.createdAt,
-      birthDate: foundUser.birthDate,
-      updatedAt: foundUser.updatedAt,
-    };
+  async findOne(item: UserFindOneDto): Promise<IUser | null> {
+    return _db.user.findUnique({
+      where: {
+        id: item.id,
+        email: item.email,
+        firebaseId: item.firebaseId,
+      },
+    });
   }
 }

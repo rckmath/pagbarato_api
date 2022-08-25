@@ -5,15 +5,15 @@
 
 ## **How to run**
 1. Clone the project
-2. Open the terminal inside project's root folder
-3. Run "docker-compose build" and wait until the container is settled up
-### **Linux Users**
-#### For starting the container, use:
-- Run "make up" command for run the container in development mode
-- Run "make up-prod" command for run the container in production mode
-- Run "make down" command for shutting down the container
-### **Windows Users**
-#### For starting the container, use:
-- Run "docker-compose --env-file .env up -d" command for run the container in development mode
-- Run "docker-compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml up --build -d" command for run the container in production mode
-- Run "docker-compose down" command for shutting down the container
+2. Create a .env file with your private/secret credentials
+3. Open the terminal inside project's root folder
+4. Run "docker-compose build" and wait until the container is settled up
+5. Run the containers according to your operational system
+#### **Linux Users**
+- For running in development mode: use "make up" command
+- For running in production mode: use "make up-prod" command
+- For shutting down: use "make down" command
+#### **Windows Users**
+- For running in development mode: use "docker-compose --env-file .env up -d" command
+- For running in production mode: use "docker-compose --env-file .env -f docker-compose.yml -f docker-compose.prod.yml up --build -d" command
+- For shutting down: use "docker-compose down" command

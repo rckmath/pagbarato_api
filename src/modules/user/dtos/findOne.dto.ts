@@ -1,13 +1,30 @@
-import { MissingFieldException } from '@shared/errors';
+import { BaseFindOneDto } from '@http/dto';
+import { isValidUUID } from '@shared/utils';
+import { InvalidFieldException, MissingFieldException } from '@shared/errors';
 
-export default class UserFindOneDto {
-  constructor(public readonly id: string) {}
+export default class UserFindOneDto extends BaseFindOneDto {
+  constructor(
+    public id?: string,
+    public firebaseId?: string,
+    public email?: string,
+    public withFirebaseId?: boolean,
+  ) {
+    super(id);
+  }
 
   static from(body: Partial<UserFindOneDto>) {
-    if (!body.id) {
-      throw new MissingFieldException('id');
+    if (!body.id) throw new MissingFieldException('id');
+    body.withFirebaseId = body.withFirebaseId && typeof body.withFirebaseId == 'string' && JSON.parse(body.withFirebaseId);
+    if (body.withFirebaseId) {
+      body.firebaseId = body.id;
+      body.id = undefined;
     }
-
-    return new UserFindOneDto(body.id);
+    if (body.id && !body.withFirebaseId && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
+    return new UserFindOneDto(
+      body.id,
+      body.firebaseId,
+      body.email,
+      body.withFirebaseId,
+    );
   }
 }

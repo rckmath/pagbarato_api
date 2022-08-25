@@ -26,8 +26,12 @@
       "@user/*": ["./src/modules/user/*"],
       "@utils/*": ["./src/shared/utils/*"],
       "@infra/*": ["./src/shared/infra/*"],
+      "@price/*": ["./src/modules/price/*"],
       "@http/*": ["./src/shared/infra/http/*"],
-      "@database/*": ["./src/shared/infra/database/*"]
+      "@product/*": ["./src/modules/product/*"],
+      "@dashboard/*": ["./src/modules/dashboard/*"],
+      "@database/*": ["./src/shared/infra/database/*"],
+      "@establishment/*": ["./src/modules/establishment/*"],
     },
     "rootDirs": [
       "./src",

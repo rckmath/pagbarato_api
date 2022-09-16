@@ -1,3 +1,4 @@
+import { IBusinessHours } from '@business_hours/businessHours.interface';
 import { Prisma } from '@prisma/client';
 import {
   EstablishmentCreateDto,
@@ -15,6 +16,7 @@ export interface IEstablishment {
   longitude: Prisma.Decimal;
   createdAt: Date;
   updatedAt: Date;
+  businessesHours?: Array<IBusinessHours>;
 }
 
 export interface IEstablishmentService {

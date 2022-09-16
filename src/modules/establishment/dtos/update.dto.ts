@@ -1,3 +1,4 @@
+import BusinessHoursDto from '@business_hours/dtos/businessHours.dto';
 import { InvalidFieldException, MissingFieldException } from '@shared/errors';
 import { isValidUUID } from '@shared/utils';
 
@@ -6,7 +7,8 @@ export default class EstablishmentUpdateDto {
     public readonly id: string,
     public readonly name?: string,
     public readonly latitude?: number,
-    public readonly longitude?: number
+    public readonly longitude?: number,
+    public businessesHours?: Array<BusinessHoursDto>
   ) {}
 
   static from(body: Partial<EstablishmentUpdateDto>) {

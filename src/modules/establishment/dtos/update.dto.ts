@@ -14,6 +14,9 @@ export default class EstablishmentUpdateDto {
   static from(body: Partial<EstablishmentUpdateDto>) {
     if (!body.id) throw new MissingFieldException('id');
     if (body.id && !isValidUUID(body.id)) throw new InvalidFieldException('id', body.id);
-    return new EstablishmentUpdateDto(body.id, body.name, body.latitude, body.longitude);
+    if (body.businessesHours && body.businessesHours.length) {
+      body.businessesHours = body.businessesHours.filter((x) => x.openingAt && x.closureAt && !x.id);
+    }
+    return new EstablishmentUpdateDto(body.id, body.name, body.latitude, body.longitude, body.businessesHours);
   }
 }

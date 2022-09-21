@@ -9,7 +9,6 @@ import { EstablishmentCreateDto, EstablishmentFindManyDto, EstablishmentUpdateDt
 @injectable()
 export class EstablishmentRepository implements IEstablishmentRepository {
   async create(item: EstablishmentCreateDto): Promise<IEstablishment> {
-    console.log(item)
     const establishment = await _db.establishment.create({
       data: {
         name: item.name,
@@ -55,8 +54,10 @@ export class EstablishmentRepository implements IEstablishmentRepository {
     });
   }
 
-  async delete(idList: Array<string>): Promise<void> {
-    await _db.establishment.deleteMany({ where: { id: { in: idList } } });
+  async delete(idList: Array<string>, isBusinessesHours: boolean): Promise<void> {
+    isBusinessesHours
+      ? await _db.businessHour.deleteMany({ where: { id: { in: idList } } })
+      : await _db.establishment.deleteMany({ where: { id: { in: idList } } });
   }
 
   async find(searchParameters: EstablishmentFindManyDto): Promise<Array<IEstablishment>> {

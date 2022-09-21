@@ -33,6 +33,6 @@ export interface IEstablishmentRepository {
   find(searchParameters: EstablishmentFindManyDto): Promise<Array<IEstablishment>>;
   findOne(id: IEstablishment['id']): Promise<IEstablishment | null>;
   update(id: string, item: EstablishmentUpdateDto): Promise<void>;
-  delete(idList: Array<string>): Promise<void>;
+  delete(idList: Array<string>, isBusinessesHours: boolean): Promise<void>;
   count(searchParameters: EstablishmentFindManyDto): Promise<number>;
 }

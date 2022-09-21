@@ -44,7 +44,8 @@ export class EstablishmentService implements IEstablishmentService {
 
   async delete(item: EstablishmentDeleteDto): Promise<void> {
     const idList = item.id as Array<string>;
-    const establishmentList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
-    if (establishmentList.length) await this._repository.delete(idList);
+    let establishmentList = [];
+    if (!item.isBusinessesHours) establishmentList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
+    if (establishmentList.length || item.isBusinessesHours) await this._repository.delete(idList, item.isBusinessesHours);
   }
 }

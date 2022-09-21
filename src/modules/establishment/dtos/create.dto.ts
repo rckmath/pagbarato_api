@@ -10,7 +10,6 @@ export default class EstablishmentCreateDto {
   ) {}
 
   static from(body: Partial<EstablishmentCreateDto>) {
-    console.log(body.businessesHours);
     if (!body.name) throw new MissingFieldException('name');
     if (!body.latitude) throw new MissingFieldException('latitude');
     if (!body.longitude) throw new MissingFieldException('longitude');

@@ -14,7 +14,19 @@ export class EstablishmentRepository implements IEstablishmentRepository {
         name: item.name,
         latitude: new Prisma.Decimal(item.latitude),
         longitude: new Prisma.Decimal(item.longitude),
+        businessesHours: item.businessesHours?.length
+          ? {
+              createMany: {
+                data: item.businessesHours.map((businessHours) => ({
+                  day: businessHours.day,
+                  openingAt: businessHours.openingAt,
+                  closureAt: businessHours.closureAt,
+                })),
+              },
+            }
+          : undefined,
       },
+      include: { businessesHours: true },
     });
 
     return establishment;
@@ -27,12 +39,25 @@ export class EstablishmentRepository implements IEstablishmentRepository {
         name: item.name,
         latitude: item.latitude ? new Prisma.Decimal(item.latitude) : undefined,
         longitude: item.longitude ? new Prisma.Decimal(item.longitude) : undefined,
+        businessesHours: item.businessesHours?.length
+          ? {
+              createMany: {
+                data: item.businessesHours.map((businessHours) => ({
+                  day: businessHours.day,
+                  openingAt: businessHours.openingAt,
+                  closureAt: businessHours.closureAt,
+                })),
+              },
+            }
+          : undefined,
       },
     });
   }
 
-  async delete(idList: Array<string>): Promise<void> {
-    await _db.establishment.deleteMany({ where: { id: { in: idList } } });
+  async delete(idList: Array<string>, isBusinessesHours: boolean): Promise<void> {
+    isBusinessesHours
+      ? await _db.businessHour.deleteMany({ where: { id: { in: idList } } })
+      : await _db.establishment.deleteMany({ where: { id: { in: idList } } });
   }
 
   async find(searchParameters: EstablishmentFindManyDto): Promise<Array<IEstablishment>> {
@@ -74,8 +99,9 @@ export class EstablishmentRepository implements IEstablishmentRepository {
   }
 
   async findOne(id: string): Promise<IEstablishment | null> {
-    const foundEstablishment: IEstablishment | null = await _db.establishment.findUnique({ where: { id } });
-    if (!foundEstablishment) return null;
-    return foundEstablishment as IEstablishment;
+    return _db.establishment.findUnique({
+      where: { id },
+      include: { businessesHours: true },
+    });
   }
 }

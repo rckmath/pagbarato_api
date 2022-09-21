@@ -20,4 +20,5 @@ moduleAlias.addAliases({
   '@dashboard': path.join(files, `${prefix}/modules/dashboard`),
   '@database': path.join(files, `${prefix}/shared/infra/database`),
   '@establishment': path.join(files, `${prefix}/modules/establishment`),
+  '@business_hours': path.join(files, `${prefix}/modules/business_hours`),
 });

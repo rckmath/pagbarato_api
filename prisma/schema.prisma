@@ -40,6 +40,17 @@ model User {
 }
 
 // ------ ESTABLISHMENT MODEL
+enum DayOfWeekType {
+  SUN
+  MON
+  TUES
+  WED
+  THURS
+  FRI
+  SAT
+  HOLIDAYS
+}
+
 model Establishment {
   id String @id @default(uuid()) @db.Char(36)
 
@@ -51,7 +62,23 @@ model Establishment {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  prices Price[]
+  prices          Price[]
+  businessesHours BusinessHour[]
+}
+
+model BusinessHour {
+  id              String  @id @default(uuid()) @db.Char(36)
+  establishmentId String? @db.Char(36)
+
+  day       DayOfWeekType
+  openingAt DateTime?
+  closureAt DateTime?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  establishment Establishment? @relation(fields: [establishmentId], references: [id])
 }
 
 // ------ PRODUCT MODEL

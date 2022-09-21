@@ -32,6 +32,7 @@
       "@dashboard/*": ["./src/modules/dashboard/*"],
       "@database/*": ["./src/shared/infra/database/*"],
       "@establishment/*": ["./src/modules/establishment/*"],
+      "@business_hours/*": ["./src/modules/business_hours/*"],
     },
     "rootDirs": [
       "./src",

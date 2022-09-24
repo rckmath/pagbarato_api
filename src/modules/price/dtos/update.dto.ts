@@ -12,6 +12,8 @@ export default class PriceUpdateDto {
     public readonly value?: number,
     public readonly type?: PriceType,
     public readonly expiresAt?: Date,
+    public readonly thumbsUp?: number,
+    public readonly thumbsDown?: number,
     public readonly isProductWithNearExpirationDate?: boolean
   ) {}
 
@@ -33,6 +35,8 @@ export default class PriceUpdateDto {
       body.value,
       body.type,
       body.expiresAt,
+      body.thumbsUp,
+      body.thumbsDown,
       body.isProductWithNearExpirationDate
     );
   }

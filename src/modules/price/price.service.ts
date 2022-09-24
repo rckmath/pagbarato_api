@@ -9,11 +9,15 @@ import { NotFoundException } from '@shared/errors';
 import { IProductRepository } from '@product/product.interface';
 import { ProductUnitType } from '@product/product.enum';
 
+import { IPriceRateRepository } from '@price_rate/priceRate.interface';
+import { PriceRateCreateDto, PriceRateDto } from '@price_rate/dtos';
+
 @injectable()
 export class PriceService implements IPriceService {
   constructor(
     @inject(TYPES.IPriceRepository) private readonly _repository: IPriceRepository,
-    @inject(TYPES.IProductRepository) private readonly _productRepository: IProductRepository
+    @inject(TYPES.IProductRepository) private readonly _productRepository: IProductRepository,
+    @inject(TYPES.IPriceRateRepository) private readonly _priceRateRepository: IPriceRateRepository
   ) {}
 
   async createOne(price: PriceCreateDto): Promise<PriceDto> {
@@ -22,6 +26,10 @@ export class PriceService implements IPriceService {
       : price.productId;
     const response = await this._repository.create(price);
     return this.findOne({ id: response.id });
+  }
+
+  async createRate(rate: PriceRateCreateDto): Promise<PriceRateDto> {
+    return this._priceRateRepository.create(rate);
   }
 
   async findOne(price: PriceFindOneDto): Promise<PriceDto> {
@@ -49,6 +57,7 @@ export class PriceService implements IPriceService {
 
   async delete(price: PriceDeleteDto): Promise<void> {
     const idList = price.id as Array<string>;
+    if (price.isRate) return this._priceRateRepository.deleteAndUpdatePrice(idList);
     const priceList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
     if (priceList.length) await this._repository.delete(idList);
   }

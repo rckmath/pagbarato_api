@@ -37,15 +37,15 @@ export class EstablishmentService implements IEstablishmentService {
     return this._repository.count(searchParameters);
   }
 
-  async updateOne(item: EstablishmentUpdateDto): Promise<void> {
-    await this.findOne({ id: item.id });
-    return this._repository.update(item.id, item);
+  async updateOne(establishment: EstablishmentUpdateDto): Promise<void> {
+    await this.findOne({ id: establishment.id });
+    return this._repository.update(establishment.id, establishment);
   }
 
-  async delete(item: EstablishmentDeleteDto): Promise<void> {
-    const idList = item.id as Array<string>;
+  async delete(establishment: EstablishmentDeleteDto): Promise<void> {
+    const idList = establishment.id as Array<string>;
     let establishmentList = [];
-    if (!item.isBusinessesHours) establishmentList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
-    if (establishmentList.length || item.isBusinessesHours) await this._repository.delete(idList, item.isBusinessesHours);
+    if (!establishment.isBusinessesHours) establishmentList = await Promise.all(idList.map(async (id) => this._repository.findOne(id)));
+    if (establishmentList.length || establishment.isBusinessesHours) await this._repository.delete(idList, establishment.isBusinessesHours);
   }
 }

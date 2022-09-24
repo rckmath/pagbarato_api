@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Price" ADD COLUMN     "thumbsDown" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "thumbsUp" INTEGER NOT NULL DEFAULT 0;

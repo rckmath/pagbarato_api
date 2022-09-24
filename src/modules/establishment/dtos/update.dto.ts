@@ -8,7 +8,7 @@ export default class EstablishmentUpdateDto {
     public readonly name?: string,
     public readonly latitude?: number,
     public readonly longitude?: number,
-    public businessesHours?: Array<BusinessHoursDto>
+    public businessesHours?: Array<BusinessHoursDto>,
   ) {}
 
   static from(body: Partial<EstablishmentUpdateDto>) {

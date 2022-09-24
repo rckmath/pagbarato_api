@@ -26,8 +26,8 @@ export interface IPrice {
   establishmentId: string | null;
   value: Prisma.Decimal | number;
   type: PriceType;
-  thumbsUp: number | null;
-  thumbsDown: number | null;
+  thumbsUp: number;
+  thumbsDown: number;
   isProductWithNearExpirationDate: boolean;
   expiresAt: Date | null;
   createdAt: Date;

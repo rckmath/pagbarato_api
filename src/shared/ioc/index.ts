@@ -11,9 +11,9 @@ const container = new Container({ skipBaseClassChecks: true });
 
 container.bind(PrismaService).toSelf();
 container.load(new UserDI());
-container.load(new PriceRateDI());
 container.load(new PriceDI());
 container.load(new ProductDI());
+container.load(new PriceRateDI());
 container.load(new EstablishmentDI());
 
 export { container };

@@ -1,11 +1,45 @@
+import { Prisma } from '@prisma/client';
+
 import { UserDto } from '@user/dtos';
 import { ProductDto } from '@product/dtos';
 import { EstablishmentDto } from '@establishment/dtos';
 import { PriceRateDto } from '@price_rate/dtos';
 
 import { IPrice } from '../price.interface';
-import { PriceType } from '../price.enum';
-import { Prisma } from '@prisma/client';
+import { PriceType, TrustingType } from '../price.enum';
+
+const calculatePercentageBetween = (firstNo: number, secondNo: number) => {
+  return (firstNo / secondNo) * 100;
+};
+
+const applyTrustingFactor = ({ thumbsUp, thumbsDown }: { thumbsUp: number; thumbsDown: number }) => {
+  const CUT_OFF_VALUE = 10;
+  if (thumbsUp == 0 && thumbsDown === 0) return TrustingType.NEUTRAL;
+
+  const thumbsDownPercentageOverThumbsUp = calculatePercentageBetween(thumbsDown, thumbsUp || 1);
+
+  if (thumbsDown < CUT_OFF_VALUE) {
+    if (thumbsDownPercentageOverThumbsUp > 300) return TrustingType.VERY_LOW;
+    if (thumbsDownPercentageOverThumbsUp >= 200) return TrustingType.LOW;
+    if (thumbsDownPercentageOverThumbsUp >= 100) return TrustingType.NEUTRAL;
+  }
+
+  if (thumbsDown >= CUT_OFF_VALUE) {
+    if (thumbsDownPercentageOverThumbsUp > 80) return TrustingType.VERY_LOW;
+    if (thumbsDownPercentageOverThumbsUp >= 40) return TrustingType.LOW;
+    if (thumbsDownPercentageOverThumbsUp >= 30) return TrustingType.NEUTRAL;
+  }
+
+  if (thumbsUp < CUT_OFF_VALUE) {
+    if (thumbsDownPercentageOverThumbsUp <= 30) return TrustingType.HIGH;
+    if (thumbsDownPercentageOverThumbsUp < 100) return TrustingType.NEUTRAL;
+  }
+
+  if (thumbsDownPercentageOverThumbsUp <= 15) return TrustingType.VERY_HIGH;
+  if (thumbsDownPercentageOverThumbsUp < 30) return TrustingType.HIGH;
+
+  return TrustingType.HIGH;
+};
 
 export default class PriceDto {
   constructor(
@@ -20,6 +54,7 @@ export default class PriceDto {
     public readonly isProductWithNearExpirationDate: boolean,
     public readonly createdAt: Date,
     public readonly expiresAt: Date | null,
+    public trustingFactor: TrustingType = TrustingType.NEUTRAL,
     public readonly updatedAt?: Date,
     public readonly user?: UserDto | null,
     public readonly rates?: Array<PriceRateDto>,
@@ -28,6 +63,7 @@ export default class PriceDto {
   ) {}
 
   static from(price: IPrice) {
+    const trustingFactor = applyTrustingFactor(price);
     const user = price.user ? UserDto.from(price.user) : null;
     const product = price.product ? ProductDto.from(price.product) : null;
     const rates = price.rates?.length ? PriceRateDto.fromMany(price.rates) : [];
@@ -47,6 +83,7 @@ export default class PriceDto {
       price.isProductWithNearExpirationDate,
       price.createdAt,
       price.expiresAt,
+      trustingFactor,
       price.updatedAt,
       user,
       rates,

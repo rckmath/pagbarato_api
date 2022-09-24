@@ -33,6 +33,8 @@ export class PriceRepository implements IPriceRepository {
         expiresAt: item.expiresAt,
         value: item.value ? new Prisma.Decimal(item.value) : undefined,
         isProductWithNearExpirationDate: item.isProductWithNearExpirationDate,
+        thumbsUp: item.thumbsUp,
+        thumbsDown: item.thumbsDown,
       },
     });
   }

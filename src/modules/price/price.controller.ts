@@ -16,9 +16,11 @@ import { TYPES } from '@shared/ioc/types.ioc';
 
 import { IPriceService } from './price.interface';
 import { PriceCreateDto, PriceFindOneDto, PriceDeleteDto, PriceFindManyDto, PriceDto, PriceUpdateDto } from './dtos';
+import { PriceRateCreateDto } from '@price_rate/dtos';
 
 import { BaseHttpResponse, Request, Validate } from '@http/api';
 import { BasePaginationDto } from '@http/dto';
+
 import AuthMiddleware from '@user/user.middleware';
 
 @controller('/price')
@@ -30,6 +32,13 @@ export class PriceController extends BaseHttpController implements Controller {
   @httpPost('/', AuthMiddleware.validateToken({ setUserIdInBody: true }), Validate.with(PriceCreateDto))
   public async create(@request() req: Request, @response() res: express.Response) {
     const createdPrice = await this._priceService.createOne(req.body);
+    const response = BaseHttpResponse.success(createdPrice);
+    return res.json(response);
+  }
+
+  @httpPost('/:priceId/rate', AuthMiddleware.validateToken({ setUserIdInBody: true }), Validate.withAll(PriceRateCreateDto))
+  public async createRate(@request() req: Request, @response() res: express.Response) {
+    const createdPrice = await this._priceService.createRate(req.body);
     const response = BaseHttpResponse.success(createdPrice);
     return res.json(response);
   }
@@ -73,7 +82,7 @@ export class PriceController extends BaseHttpController implements Controller {
     return res.json(response);
   }
 
-  @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withParams(PriceDeleteDto))
+  @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withAll(PriceDeleteDto))
   public async deleteById(@request() req: Request, @response() res: express.Response) {
     const price = await this._priceService.delete(req.body);
     const response = BaseHttpResponse.success(price);

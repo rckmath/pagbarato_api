@@ -11,10 +11,11 @@
     "start": "node dist/index.js",
     "start:migrate": "npm run migrate && npm run start",
     "test:watch": "jest --watch --verbose",
+    "generate": "npx prisma generate",
     "migrate": "npx prisma migrate deploy",
     "migrate:dev": "npx prisma migrate dev",
     "lint:fix": "eslint ./src ./test --ext .ts --fix",
-    "dev": "npm run migrate && nodemon -L src/index.ts"
+    "dev": "npm run generate && npm run migrate && nodemon -L src/index.ts"
   },
   "repository": {
     "type": "git",

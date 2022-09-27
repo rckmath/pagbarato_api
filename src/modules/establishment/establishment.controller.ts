@@ -70,7 +70,7 @@ export class EstablishmentController extends BaseHttpController implements Contr
     return res.json(response);
   }
 
-  @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withParams(EstablishmentDeleteDto))
+  @httpDelete('/:id', AuthMiddleware.validateToken(), Validate.withAll(EstablishmentDeleteDto))
   public async deleteById(@request() req: Request, @response() res: express.Response) {
     const establishment = await this._establishmentService.delete(req.body);
     const response = BaseHttpResponse.success(establishment);

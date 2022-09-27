@@ -1,7 +1,10 @@
+import { Prisma } from '@prisma/client';
+
 import { IEstablishment } from '@establishment/establishment.interface';
+import { IPriceRate } from '@price_rate/priceRate.interface';
 import { IProduct } from '@product/product.interface';
 import { IUser } from '@user/user.interface';
-import { Prisma } from '@prisma/client';
+
 import {
   PriceCreateDto,
   PriceFindManyDto,
@@ -11,6 +14,9 @@ import {
   PriceDto,
   PriceFindManyByRangeDto,
 } from './dtos';
+
+import { PriceRateCreateDto, PriceRateDto } from '@price_rate/dtos';
+
 import { PriceType } from './price.enum';
 
 export interface IPrice {
@@ -20,17 +26,21 @@ export interface IPrice {
   establishmentId: string | null;
   value: Prisma.Decimal | number;
   type: PriceType;
+  thumbsUp: number;
+  thumbsDown: number;
   isProductWithNearExpirationDate: boolean;
   expiresAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   user?: IUser | null;
+  rates?: Array<IPriceRate>;
   product?: IProduct | null;
   establishment?: IEstablishment | null;
 }
 
 export interface IPriceService {
   createOne(item: PriceCreateDto): Promise<PriceDto>;
+  createRate(item: PriceRateCreateDto): Promise<PriceRateDto>;
   findOne(item: PriceFindOneDto): Promise<PriceDto>;
   findMany(searchParameters: PriceFindManyDto): Promise<Array<PriceDto>>;
   updateOne(item: PriceUpdateDto): Promise<void>;

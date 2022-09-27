@@ -1,60 +1,142 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 generator client {
   provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "filteredRelationCount"]
   binaryTargets   = ["native", "linux-musl"]
-  previewFeatures = ["fullTextSearch"]
-}
-
-generator erd {
-  provider = "prisma-erd-generator"
-  theme    = "forest"
 }
 
 datasource db {
-  url      = env("DATABASE_URL")
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// ------ USER MODEL
+model User {
+  id         String       @id @default(uuid()) @db.Char(36)
+  firebaseId String       @unique
+  email      String       @unique @db.VarChar(320)
+  name       String       @db.VarChar(100)
+  role       UserRoleType @default(CONSUMER)
+  birthDate  DateTime?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  deletedAt  DateTime?
+  prices     Price[]
+  rates      PriceRate[]
+}
+
+model Establishment {
+  id              String         @id @default(uuid()) @db.Char(36)
+  name            String
+  latitude        Decimal        @db.Decimal(10, 6)
+  longitude       Decimal        @db.Decimal(10, 6)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+  businessesHours BusinessHour[]
+  prices          Price[]
+}
+
+model BusinessHour {
+  id              String         @id @default(uuid()) @db.Char(36)
+  establishmentId String?        @db.Char(36)
+  day             DayOfWeekType
+  openingAt       DateTime?
+  closureAt       DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  deletedAt       DateTime?
+  establishment   Establishment? @relation(fields: [establishmentId], references: [id])
+}
+
+model Product {
+  id        String    @id @default(uuid()) @db.Char(36)
+  name      String    @unique @db.VarChar(100)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  unit      UnitType  @default(EA)
+  prices    Price[]
+}
+
+model Price {
+  id                              String         @id @default(uuid()) @db.Char(36)
+  userId                          String?        @db.Char(36)
+  productId                       String?        @db.Char(36)
+  establishmentId                 String?        @db.Char(36)
+  value                           Decimal        @db.Decimal(10, 2)
+  type                            PriceType      @default(COMMON)
+  isProductWithNearExpirationDate Boolean        @default(false)
+  thumbsUp                        Int            @default(0)
+  thumbsDown                      Int            @default(0)
+  expiresAt                       DateTime?
+  createdAt                       DateTime       @default(now())
+  updatedAt                       DateTime       @updatedAt
+  deletedAt                       DateTime?
+  establishment                   Establishment? @relation(fields: [establishmentId], references: [id])
+  product                         Product?       @relation(fields: [productId], references: [id])
+  user                            User?          @relation(fields: [userId], references: [id])
+  rates                           PriceRate[]
+}
+
+model PriceRate {
+  id        String     @id @default(uuid()) @db.Char(36)
+  userId    String?    @db.Char(36)
+  priceId   String?    @db.Char(36)
+  thumbs    ThumbsType
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+  price     Price?     @relation(fields: [priceId], references: [id])
+  user      User?      @relation(fields: [userId], references: [id])
+}
+
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
+
+model us_gaz {
+  id        Int     @id(map: "pk_us_gaz") @default(autoincrement())
+  seq       Int?
+  word      String?
+  stdword   String?
+  token     Int?
+  is_custom Boolean @default(true)
+}
+
+model us_lex {
+  id        Int     @id(map: "pk_us_lex") @default(autoincrement())
+  seq       Int?
+  word      String?
+  stdword   String?
+  token     Int?
+  is_custom Boolean @default(true)
+}
+
+model us_rules {
+  id        Int     @id(map: "pk_us_rules") @default(autoincrement())
+  rule      String?
+  is_custom Boolean @default(true)
+}
+
 enum UserRoleType {
   CONSUMER
   ADMIN
 }
 
-model User {
-  id         String @id @default(uuid()) @db.Char(36)
-  firebaseId String @unique
-
-  email String       @unique @db.VarChar(320)
-  name  String       @db.VarChar(100)
-  role  UserRoleType @default(CONSUMER)
-
-  birthDate DateTime?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  prices Price[]
+enum DayOfWeekType {
+  SUN
+  MON
+  TUES
+  WED
+  THURS
+  FRI
+  SAT
+  HOLIDAYS
 }
 
-// ------ ESTABLISHMENT MODEL
-model Establishment {
-  id String @id @default(uuid()) @db.Char(36)
-
-  name      String
-  latitude  Decimal @db.Decimal(10, 6)
-  longitude Decimal @db.Decimal(10, 6)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  prices Price[]
-}
-
-// ------ PRODUCT MODEL
 enum UnitType {
   G
   KG
@@ -63,41 +145,12 @@ enum UnitType {
   DZ
 }
 
-model Product {
-  id String @id @default(uuid()) @db.Char(36)
-
-  name String   @unique @db.VarChar(100)
-  unit UnitType @default(EA)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  prices Price[]
-}
-
-// ------ PRICE MODEL
 enum PriceType {
   COMMON
   DEAL
 }
 
-model Price {
-  id              String  @id @default(uuid()) @db.Char(36)
-  userId          String? @db.Char(36)
-  productId       String? @db.Char(36)
-  establishmentId String? @db.Char(36)
-
-  value                           Decimal   @db.Decimal(10, 2)
-  type                            PriceType @default(COMMON)
-  isProductWithNearExpirationDate Boolean   @default(false)
-  expiresAt                       DateTime?
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  user          User?          @relation(fields: [userId], references: [id])
-  product       Product?       @relation(fields: [productId], references: [id])
-  establishment Establishment? @relation(fields: [establishmentId], references: [id])
+enum ThumbsType {
+  UP
+  DOWN
 }

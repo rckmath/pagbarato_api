@@ -18,6 +18,8 @@ moduleAlias.addAliases({
   '@http': path.join(files, `${prefix}/shared/infra/http`),
   '@product': path.join(files, `${prefix}/modules/product`),
   '@dashboard': path.join(files, `${prefix}/modules/dashboard`),
+  '@price_rate': path.join(files, `${prefix}/modules/price_rate`),
   '@database': path.join(files, `${prefix}/shared/infra/database`),
   '@establishment': path.join(files, `${prefix}/modules/establishment`),
+  '@business_hours': path.join(files, `${prefix}/modules/business_hours`),
 });

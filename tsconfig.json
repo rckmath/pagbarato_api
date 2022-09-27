@@ -30,8 +30,10 @@
       "@http/*": ["./src/shared/infra/http/*"],
       "@product/*": ["./src/modules/product/*"],
       "@dashboard/*": ["./src/modules/dashboard/*"],
+      "@price_rate/*": ["./src/modules/price_rate/*"],
       "@database/*": ["./src/shared/infra/database/*"],
       "@establishment/*": ["./src/modules/establishment/*"],
+      "@business_hours/*": ["./src/modules/business_hours/*"],
     },
     "rootDirs": [
       "./src",

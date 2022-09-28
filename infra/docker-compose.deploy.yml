@@ -1,0 +1,55 @@
+version: '3.8'
+
+x-common_env: &common_env
+  PORT: ${PORT}
+  DATABASE_USER: ${DATABASE_USER}
+  DATABASE_PASS: ${DATABASE_PASS}
+
+services:
+  db:
+    container_name: database
+    image: postgis/postgis:14-3.3
+    restart: always
+    environment:
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASS}
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  app:
+    image: rckmath/pagbarato:latest
+    container_name: app
+    depends_on:
+      - db
+    links:
+      - db
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+    command: npm run start:migrate
+
+  nginx:
+    depends_on:
+      - app
+    restart: always
+    image: nginx:alpine
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes: 
+      - ./nginx/conf/:/etc/nginx/conf.d/:ro
+      - ./certbot/www:/var/www/certbot/:ro
+      - ./certbot/conf/:/etc/nginx/ssl/:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    volumes:
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
+      
+volumes:
+  db:
+    driver: local

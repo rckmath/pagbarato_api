@@ -14,6 +14,7 @@ import { PriceFindManyByRangeDto } from '@price/dtos';
 
 import { IEstablishmentRepository } from '@establishment/establishment.interface';
 import { EstablishmentFindManyDto } from '@establishment/dtos';
+import { applyTrustingFactor } from '@price/dtos/price.dto';
 
 const getWhereQuery = (searchParameters: ProductFindManyDto) => {
   let whereCount = 0;
@@ -124,6 +125,7 @@ export class ProductRepository implements IProductRepository {
           ...x,
           lowestPrice: price?.value ? parseFloat(new Prisma.Decimal(price.value).toNumber().toFixed(2)) : undefined,
           lowestPriceEstablishment: price?.establishment?.name,
+          lowestPriceTrustingFactor: price ? applyTrustingFactor(price) : undefined,
         };
       })
       .filter((x) => x.lowestPrice);
@@ -161,9 +163,7 @@ export class ProductRepository implements IProductRepository {
       return product;
     }
 
-    product = await _db.product.findUnique({
-      where: { id: searchParameters.id },
-    });
+    product = await _db.product.findUnique({ where: { id: searchParameters.id } });
 
     if (!product) return null;
 

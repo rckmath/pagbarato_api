@@ -12,8 +12,9 @@ const calculatePercentageBetween = (firstNo: number, secondNo: number) => {
   return (firstNo / secondNo) * 100;
 };
 
-const applyTrustingFactor = ({ thumbsUp, thumbsDown }: { thumbsUp: number; thumbsDown: number }) => {
+export const applyTrustingFactor = ({ thumbsUp, thumbsDown }: { thumbsUp: number; thumbsDown: number }) => {
   const CUT_OFF_VALUE = 10;
+
   if (thumbsUp == 0 && thumbsDown === 0) return TrustingType.NEUTRAL;
 
   const thumbsDownPercentageOverThumbsUp = calculatePercentageBetween(thumbsDown, thumbsUp || 1);

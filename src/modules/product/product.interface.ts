@@ -1,3 +1,4 @@
+import { TrustingType } from '@price/price.enum';
 import { IPrice } from '@price/price.interface';
 import { ProductCreateDto, ProductFindManyDto, ProductFindOneDto, ProductDeleteDto, ProductUpdateDto, ProductDto } from './dtos';
 import { ProductUnitType } from './product.enum';
@@ -10,6 +11,7 @@ export interface IProduct {
   updatedAt: Date;
   lowestPrice?: number | null;
   lowestPriceEstablishment?: string | null;
+  lowestPriceTrustingFactor?: TrustingType | null;
   prices?: Array<IPrice>;
 }
 

@@ -70,10 +70,10 @@ export class PriceRepository implements IPriceRepository {
     const { latitude, longitude, radius, productIdList, lowestOnly } = searchParameters;
 
     const select = !lowestOnly
-      ? Prisma.sql`SELECT * FROM "Price" `
-      : Prisma.sql`SELECT DISTINCT ON("Price"."productId") "Price"."productId", "Price"."establishmentId", "Price"."value" FROM "Price"`;
+      ? Prisma.sql`SELECT "Price"."id", "Price".* FROM "Price" `
+      : Prisma.sql`SELECT DISTINCT ON("Price"."productId") "Price"."id", "Price"."productId", "Price"."establishmentId", "Price"."value", "Price"."thumbsUp", "Price"."thumbsDown" FROM "Price"`;
 
-    const join = Prisma.sql`LEFT OUTER JOIN "Establishment" ON "Price"."establishmentId"="Establishment"."id" `;
+    const join = Prisma.sql`INNER JOIN "Establishment" ON "Price"."establishmentId"="Establishment"."id" `;
 
     const where = Prisma.sql`WHERE "Price"."productId" IN (${Prisma.join(
       productIdList.map((x) => x)

@@ -47,6 +47,14 @@ export class UserController extends BaseHttpController implements Controller {
     return res.json(response);
   }
 
+  @httpGet('/me', AuthMiddleware.validateToken({ setUserIdInBody: true }))
+  public async getMe(@request() req: Request, @response() res: express.Response) {
+    req.body.id = req.body.userId;
+    const user = await this._userService.findOne(req.body);
+    const response = BaseHttpResponse.success(user);
+    return res.json(response);
+  }
+
   @httpGet('/:id', AuthMiddleware.validateToken(), Validate.withAll(UserFindOneDto))
   public async getById(@request() req: Request, @response() res: express.Response) {
     const user = await this._userService.findOne(req.body);

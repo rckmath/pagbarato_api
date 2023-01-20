@@ -53,6 +53,8 @@ export class PriceRepository implements IPriceRepository {
       where: {
         id: { in: searchParameters.id?.length ? searchParameters.id : undefined },
         userId: { in: searchParameters.userId?.length ? searchParameters.userId : undefined },
+        product: { isNot: null },
+        establishment: { isNot: null },
       },
       ...(searchParameters.includeDetails && {
         include: {
@@ -105,6 +107,8 @@ export class PriceRepository implements IPriceRepository {
           gte: searchParameters.fromDate,
           lte: searchParameters.toDate,
         },
+        product: { isNot: null },
+        establishment: { isNot: null },
       },
     });
   }

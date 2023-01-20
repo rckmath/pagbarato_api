@@ -1,3 +1,4 @@
+import { TrustingType } from '@price/price.enum';
 import { PriceDto } from '@price/dtos';
 
 import { ProductUnitType } from '../product.enum';
@@ -12,12 +13,14 @@ export default class ProductDto {
     public readonly updatedAt?: Date,
     public readonly prices?: Array<PriceDto>,
     public readonly lowestPrice?: number | null,
-    public readonly lowestPriceEstablishment?: string | null
+    public readonly lowestPriceEstablishment?: string | null,
+    public readonly lowestPriceTrustingFactor?: TrustingType | null
   ) {}
 
   static from(product: IProduct) {
     const prices = product.prices?.length ? PriceDto.fromMany(product.prices) : [];
     const lowestPrice = product.lowestPrice ?? (prices?.length ? prices[0]?.value : undefined);
+    const lowestPriceTrustingFactor = product.lowestPriceTrustingFactor ?? (prices?.length ? prices[0]?.trustingFactor : undefined);
     const lowestPriceEstablishment = product.lowestPriceEstablishment ?? (prices?.length ? prices[0]?.establishment?.name : undefined);
 
     return new ProductDto(
@@ -28,7 +31,8 @@ export default class ProductDto {
       product.updatedAt,
       prices,
       lowestPrice,
-      lowestPriceEstablishment
+      lowestPriceEstablishment,
+      lowestPriceTrustingFactor
     );
   }
 
